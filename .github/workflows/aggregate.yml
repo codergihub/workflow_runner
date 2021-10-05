@@ -37,7 +37,7 @@ jobs:
             ${{ runner.os }}-
       - name: aggregation step
         id: collection
-        run: projectName=${{github.event.inputs.projectName}} parameters="${{github.event.inputs.parameters}}" HEADLESS=true NEXT_TASK=page_collection ALL=TRUE  node index.js
+        run: parameters="${{github.event.inputs.parameters}}"  node index.js
 
 
 
