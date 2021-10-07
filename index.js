@@ -6,19 +6,6 @@ const pather =require('path')
 var exec = require('child_process').exec
 
 
-const packages = 'dotenv dotenv-expand'
-// var cmd = exec(`npm i ${packages}`, function(err, stdout, stderr) {
-//     if (err) {
-//         debugger;
-//       // handle error
-//     } 
-//     else{
-
-//         debugger;
-
-//     }
-//     console.log(stdout);
-//   });
 
 var gh_token = ''
 var owner = ''
@@ -84,7 +71,7 @@ debugger;
     }
   
   }
-  //3.MERGE PACKAGE.JSON
+  //3.INSTALL DEPENDENECIES
   let wfDependencies={}
   let dependencyArray=[]
   let dependencies=''
@@ -110,8 +97,24 @@ debugger;
 
       } 
       else{
+
+        //4.RUN WORKFLOW ENTRY FILE
         console.log('dependencies installed')
           debugger;
+          for (let wf of workflows) {
+            const repo=wf[1]['selectedRepo']
+            const filepath =`${process.cwd()}/${repo}/main.js`
+            exec(filepath,function(err, stdout, stderr){
+
+              if (err) {
+                debugger;
+              // handle error
+              console.log(`error running ${filepath}`,err)
+      
+            } 
+            })
+
+          }
   
       }
       console.log(stdout);
@@ -121,6 +124,7 @@ debugger;
 
   debugger;
 }).catch(error => {
+  console.log('error',error)
   debugger;
 })
 
