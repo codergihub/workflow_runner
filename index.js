@@ -27,7 +27,7 @@ var email = ''
 var localId = ''
 var refreshToken = ''
 var selectedContainer = ''
-var selectedWorkSpace = ''
+var selectedWorkspace = ''
 var projectUrl = ''
 
 if (process.env.LOCAL === 'true') {
@@ -53,6 +53,7 @@ if (process.env.LOCAL === 'true') {
   selectedContainer = splitted[6]
   projectUrl = splitted[7]
   selectedWorkspace = splitted[8]
+  console.log('selectedWorkspace...',selectedWorkspace)
 
 }
 
