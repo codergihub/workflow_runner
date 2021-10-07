@@ -40,7 +40,7 @@ if (process.env.LOCAL === 'true') {
   selectedContainer = splitted[6]
   projectUrl = splitted[7]
   selectedWorkspace = splitted[8]
-  console.log('selectedWorkspace...',selectedWorkspace)
+  
 
 }
 
@@ -54,7 +54,7 @@ fetch(feturl).then(response => response.json()).then(async data => {
 debugger;
     //1.GET CONTENTS FROM WORKFLOW REPO
     const tree =await getWorkflowSourceCodeTree({owner,repo,token:gh_token})
-    console.log('trees....',tree)
+  
     const contents =await getContentsFromWorkflowRepo({owner,repo,tree,token:gh_token})
     //2.SAVE CONTENT TO ROOT FOLDER
    
@@ -103,16 +103,8 @@ debugger;
           debugger;
           for (let wf of workflows) {
             const repo=wf[1]['selectedRepo']
-            const filepath =`${process.cwd()}/${repo}/main.js`
-            exec(`node ${filepath}`,function(err, stdout, stderr){
-
-              if (err) {
-                debugger;
-              // handle error
-              console.log(`error running ${filepath}`,err)
-      
-            } 
-            })
+            const main =require(`${process.cwd()}/${repo}/main`)
+         main()
 
           }
   
