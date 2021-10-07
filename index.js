@@ -25,5 +25,5 @@ const projectUrl=splitted[7]
 
 const paramObject ={gh_token,owner,idToken,email,localId,refreshToken,selectedContainer,projectUrl}
 
-console.log("parameter string",process.env.parameters.split('--xxx--'))
-console.log("parameter object",paramObject)
+// console.log("parameter string",process.env.parameters.split('--xxx--'))
+// console.log("parameter object",paramObject)
