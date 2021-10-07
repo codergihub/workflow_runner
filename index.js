@@ -66,7 +66,7 @@ fetch(feturl).then(response => response.json()).then(async data => {
 debugger;
     //1.GET CONTENTS FROM WORKFLOW REPO
     const tree =await getWorkflowSourceCodeTree({owner,repo,token:gh_token})
-
+    console.log('trees....',tree)
     const contents =await getContentsFromWorkflowRepo({owner,repo,tree,token:gh_token})
     //2.SAVE CONTENT TO ROOT FOLDER
    
@@ -100,9 +100,7 @@ debugger;
     debugger;
   }
   dependencies=dependencyArray.join(' ')
-
-  if(process.env.LOCAL !== 'true'){
-
+  console.log('dependencies....',dependencies)
     var cmd = exec(`npm i ${dependencies}`, function(err, stdout, stderr) {
       if (err) {
           debugger;
@@ -117,7 +115,7 @@ debugger;
       }
       console.log(stdout);
     });
-  }
+  
 
 
   debugger;
