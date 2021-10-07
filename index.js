@@ -104,7 +104,7 @@ debugger;
           for (let wf of workflows) {
             const repo=wf[1]['selectedRepo']
             const filepath =`${process.cwd()}/${repo}/main.js`
-            exec(filepath,function(err, stdout, stderr){
+            exec(`node ${filepath}`,function(err, stdout, stderr){
 
               if (err) {
                 debugger;
