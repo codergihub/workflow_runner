@@ -81,39 +81,38 @@ debugger;
     wfDependencies={...wfDependencies,...dependencies}
 
   }
-
+debugger;
   for(let obj in  wfDependencies){
     const value =wfDependencies[obj].replace('^','')
     dependencyArray.push(`${obj}@${value}`)
     debugger;
   }
   dependencies=dependencyArray.join(' ')
+  debugger;
   console.log('dependencies....',dependencies)
-    var cmd = exec(`npm i ${dependencies}`, function(err, stdout, stderr) {
+  //npm i ${dependencies}
+    var cmd = exec(`echo 'hello'`, function(err, stdout, stderr) {
       if (err) {
           debugger;
         // handle error
         console.log('dependencies not installed',err)
-
       } 
       else{
-
+debugger;
         //4.RUN WORKFLOW ENTRY FILE
         console.log('dependencies installed')
           debugger;
           for (let wf of workflows) {
             const repo=wf[1]['selectedRepo']
+            debugger;
             const main =require(`${process.cwd()}/${repo}/main`)
+            debugger;
          main()
-
           }
-  
       }
       console.log(stdout);
     });
   
-
-
   debugger;
 }).catch(error => {
   console.log('error',error)
@@ -151,7 +150,7 @@ async function getWorkflowSourceCodeTree({owner,repo,token}) {
   /*required for the next endoint*/
   const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/branches`,{method:'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } } )
   const data = await response.json()
-
+debugger;
   const mainSha = data.find(d => d.name === 'main')
   const { commit: { sha } } = mainSha
 
