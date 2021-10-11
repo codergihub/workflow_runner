@@ -177,7 +177,9 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
 }
 
 
-
+process.on('exit', function (){
+  console.log('Goodbye!');
+});
 
 
 /*
