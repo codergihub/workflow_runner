@@ -50,86 +50,84 @@ const feturl = `${projectUrl}/workspaces/${selectedWorkspace}/containers/${selec
 fetch(feturl).then(response => response.json()).then(async data => {
   const workflows = Object.entries(data)
   const mapName = workflows.map(w => {
-    
+
     return { ...w[1], workflowName: w[0] }
   })
-  
+
   const orderByPriority = mapName.sort((a, b) => (a.workflowOrder > b.workflowOrder) ? 1 : -1)
-  const nextWorkflow = orderByPriority.find(w => w.complete === undefined || w.complete === false)
+  const currentWorkflow = orderByPriority.find(w => w.complete === undefined || w.complete === false)
+  const filterCurrent = orderByPriority.filter(f => f.workflowName !== currentWorkflow.workflowName)
+  const filterComplete = filterCurrent.filter(f => f.complete === true)
+  debugger;
 
 
-  
+  const repo = currentWorkflow['selectedRepo']
 
-    
-    const repo = nextWorkflow['selectedRepo']
-    
-    //1.GET CONTENTS FROM WORKFLOW REPO
-    const tree = await getWorkflowSourceCodeTree({ owner, repo, token: gh_token })
+  //1.GET CONTENTS FROM WORKFLOW REPO
+  const tree = await getWorkflowSourceCodeTree({ owner, repo, token: gh_token })
 
-    const contents = await getContentsFromWorkflowRepo({ owner, repo, tree, token: gh_token })
-    //2.SAVE CONTENT TO ROOT FOLDER
+  const contents = await getContentsFromWorkflowRepo({ owner, repo, tree, token: gh_token })
+  //2.SAVE CONTENT TO ROOT FOLDER
 
-    for (let c of contents) {
-      const { content, path } = c
-      const utfContent = Buffer.from(content, 'base64').toString('utf-8')
+  for (let c of contents) {
+    const { content, path } = c
+    const utfContent = Buffer.from(content, 'base64').toString('utf-8')
 
-      const filepath = `${process.cwd()}/${repo}/${path}`
-      const dirpath = pather.dirname(filepath)
-      makeDir.sync(dirpath)
-      fs.writeFileSync(filepath, utfContent)
+    const filepath = `${process.cwd()}/${repo}/${path}`
+    const dirpath = pather.dirname(filepath)
+    makeDir.sync(dirpath)
+    fs.writeFileSync(filepath, utfContent)
 
 
-    }
+  }
 
 
   //3.INSTALL DEPENDENECIES
 
   let dependencyArray = []
   let dependencies = ''
- 
-   
-    const { dependencies:originalDependencies } = require(`${process.cwd()}/${repo}/package.json`)
 
 
-  
-  
+  const { dependencies: originalDependencies } = require(`${process.cwd()}/${repo}/package.json`)
+
+
+
+
   for (let obj in originalDependencies) {
-    
+
     const value = originalDependencies[obj].replace('^', '')
     dependencyArray.push(`${obj}@${value}`)
-    
+
   }
   dependencies = dependencyArray.join(' ')
-  
+
   console.log('dependencies....', dependencies)
   //npm i ${dependencies}
-  var cmd = exec(`npm install ${dependencies}`, function (err, stdout, stderr) {
+  var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, function (err, stdout, stderr) {
     console.log('stderr', stderr)
     if (err) {
-      
+
       // handle error
       console.log('dependencies not installed', err)
     }
     else {
-      
+
       //4.RUN WORKFLOW ENTRY FILE
       console.log('dependencies installed')
       
-      
-    
-        
-        const main = require(`${process.cwd()}/${repo}/main`)
-        
-        main()
-      
+
+      const main = require(`${process.cwd()}/${repo}/main`)
+
+      main()
+
     }
     console.log(stdout);
   });
 
-  
+
 }).catch(error => {
   console.log('error', error)
-  
+
 })
 
 
@@ -163,7 +161,7 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
   /*required for the next endoint*/
   const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/branches`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
   const data = await response.json()
-  
+
   const mainSha = data.find(d => d.name === 'main')
   const { commit: { sha } } = mainSha
 
@@ -177,11 +175,39 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
 }
 
 
-process.on('exit', function (){
+process.on('exit', async function () {
+  if (filterComplete.length > 0) {
+
+    const parameters = `${token}--xxx--${owner}--xxx--${idToken}--xxx--${email}--xxx--${localId}--xxx--${refreshToken}--xxx--${selectedContainer}--xxx--${projectUrl}--xxx--${workspaceSelected}`
+    debugger;
+    const body = JSON.stringify({ ref: 'main', inputs: { projectName: selectedContainer, parameters } })
+    await triggerAction({ gh_action_url: `https://api.github.com/repos/${owner}/workflow_runner/actions/workflows/aggregate.yml/dispatches`, ticket: token, body })
+    debugger;
+  } else {
+    console.log('no more workflow')
+    debugger;
+  }
   console.log('Goodbye!');
 });
 
+async function triggerAction({ ticket, body, gh_action_url }) {
+  debugger;
 
+  try {
+    const response = await fetch(gh_action_url, {
+      method: 'post',
+      headers: {
+        authorization: `token ${ticket}`,
+        Accept: 'application/vnd.github.v3+json'
+      },
+      body
+    })
+    const data = await response.json()
+  } catch (error) {
+    debugger;
+  }
+
+}
 /*
 require('dotenv').config()
 const fetch = require('node-fetch')
@@ -270,16 +296,16 @@ fetch(feturl).then(response => response.json()).then(async data => {
   for(let obj in  wfDependencies){
     const value =wfDependencies[obj].replace('^','')
     dependencyArray.push(`${obj}@${value}`)
-    
+
   }
   dependencies=dependencyArray.join(' ')
-  
+
   console.log('dependencies....',dependencies)
   //npm i ${dependencies}
     var cmd = exec(`npm install ${dependencies}`, function(err, stdout, stderr) {
       console.log('stderr',stderr)
       if (err) {
-          
+
         // handle error
         console.log('dependencies not installed',err)
       }
@@ -287,22 +313,22 @@ fetch(feturl).then(response => response.json()).then(async data => {
 
         //4.RUN WORKFLOW ENTRY FILE
         console.log('dependencies installed')
-          
+
           for (let wf of workflows) {
             const repo=wf[1]['selectedRepo']
-            
+
             const main =require(`${process.cwd()}/${repo}/main`)
-            
+
          main()
           }
       }
       console.log(stdout);
     });
 
-  
+
 }).catch(error => {
   console.log('error',error)
-  
+
 })
 
 
