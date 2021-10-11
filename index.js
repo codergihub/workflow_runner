@@ -16,7 +16,7 @@ var refreshToken = ''
 var selectedContainer = ''
 var selectedWorkspace = ''
 var projectUrl = ''
-
+var filterComplete =''
 if (process.env.LOCAL === 'true') {
   gh_token = process.env.token
   owner = process.env.owner
@@ -57,7 +57,7 @@ fetch(feturl).then(response => response.json()).then(async data => {
   const orderByPriority = mapName.sort((a, b) => (a.workflowOrder > b.workflowOrder) ? 1 : -1)
   const currentWorkflow = orderByPriority.find(w => w.complete === undefined || w.complete === false)
   const filterCurrent = orderByPriority.filter(f => f.workflowName !== currentWorkflow.workflowName)
-  const filterComplete = filterCurrent.filter(f => f.complete === true)
+   filterComplete = filterCurrent.filter(f => f.complete === true)
   debugger;
 
 
@@ -114,7 +114,7 @@ fetch(feturl).then(response => response.json()).then(async data => {
 
       //4.RUN WORKFLOW ENTRY FILE
       console.log('dependencies installed')
-      
+
 
       const main = require(`${process.cwd()}/${repo}/main`)
 
@@ -175,26 +175,33 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
 }
 
 
-process.on('exit', async function () {
+process.on('exit',   async()=> {
+  debugger;
+  try {
+    
+
   if (filterComplete.length > 0) {
 
     const parameters = `${token}--xxx--${owner}--xxx--${idToken}--xxx--${email}--xxx--${localId}--xxx--${refreshToken}--xxx--${selectedContainer}--xxx--${projectUrl}--xxx--${workspaceSelected}`
     debugger;
     const body = JSON.stringify({ ref: 'main', inputs: { projectName: selectedContainer, parameters } })
-    await triggerAction({ gh_action_url: `https://api.github.com/repos/${owner}/workflow_runner/actions/workflows/aggregate.yml/dispatches`, ticket: token, body })
+  await   triggerAction({ gh_action_url: `https://api.github.com/repos/${owner}/workflow_runner/actions/workflows/aggregate.yml/dispatches`, ticket: token, body })
     debugger;
   } else {
     console.log('no more workflow')
     debugger;
   }
   console.log('Goodbye!');
+
+} catch (error) {
+    debugger;
+}
 });
 
-async function triggerAction({ ticket, body, gh_action_url }) {
+ async function triggerAction({ ticket, body, gh_action_url }) {
   debugger;
 
-  try {
-    const response = await fetch(gh_action_url, {
+     await fetch(gh_action_url, {
       method: 'post',
       headers: {
         authorization: `token ${ticket}`,
@@ -202,10 +209,7 @@ async function triggerAction({ ticket, body, gh_action_url }) {
       },
       body
     })
-    const data = await response.json()
-  } catch (error) {
-    debugger;
-  }
+ 
 
 }
 /*
