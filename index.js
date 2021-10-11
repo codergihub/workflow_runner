@@ -91,7 +91,8 @@ debugger;
   debugger;
   console.log('dependencies....',dependencies)
   //npm i ${dependencies}
-    var cmd = exec(`echo 'hello'`, function(err, stdout, stderr) {
+    var cmd = exec(`npm install ${dependencies}`, function(err, stdout, stderr) {
+      console.log('stderr',stderr)
       if (err) {
           debugger;
         // handle error
