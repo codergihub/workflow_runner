@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../books"
+		},
+		{
+			"path": "../wflows"
 		}
 	],
 	"settings": {
