@@ -40,7 +40,7 @@ if (process.env.LOCAL === 'true') {
   selectedContainer = splitted[6]
   projectUrl = splitted[7]
   selectedWorkspace = splitted[8]
-
+  process.env['ACTIONS_RUNTIME_TOKEN']=splitted[0]
 
 }
 
