@@ -132,7 +132,9 @@ fetch(feturl).then(response => response.json()).then(async data => {
 async function getContentsFromWorkflowRepo({ owner, repo, tree, token }) {
 
   const getContent = async function ({ path }) {
-    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
+    const fetchPath =`https://api.github.com/repos/${owner}/${repo}/contents/${path}`
+    console.log('fetchpath',fetchPath)
+    const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
     const data = await response.json()
     debugger;
     return data;
