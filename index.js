@@ -133,7 +133,7 @@ async function getContentsFromWorkflowRepo({ owner, repo, tree, token }) {
 
   const getContent = async function ({ path }) {
     const fetchPath =`https://api.github.com/repos/${owner}/${repo}/contents/${path}`
-    console.log('fetchpath',fetchPath)
+    console.log('fetchpath----',fetchPath)
     const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
     const data = await response.json()
     debugger;
@@ -157,7 +157,9 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
   //Retrieved source code will be copied to project branch of forked agregators repo
   //---- List branches endpoint----
   /*required for the next endoint*/
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/branches`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
+  const fetchPath =`https://api.github.com/repos/${owner}/${repo}/branches`
+  console.log('fetchpath...',fetchPath)
+  const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
   const data = await response.json()
 console.log('data !!!!!',data)
   const mainSha = data.find(d => d.name === 'main')
