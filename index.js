@@ -157,7 +157,7 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
   /*required for the next endoint*/
   const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/branches`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
   const data = await response.json()
-
+console.log('data !!!!!',data)
   const mainSha = data.find(d => d.name === 'main')
   const { commit: { sha } } = mainSha
 
