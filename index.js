@@ -14,8 +14,8 @@ var refreshToken = ''
 var selectedContainer = ''
 var selectedWorkspace = ''
 var projectUrl = ''
-var filterComplete =''
-var workflowPath=''
+var filterComplete = ''
+var workflowPath = ''
 if (process.env.LOCAL === 'true') {
   gh_token = process.env.token
   owner = process.env.owner
@@ -26,7 +26,7 @@ if (process.env.LOCAL === 'true') {
   selectedContainer = process.env.selectedContainer
   projectUrl = process.env.projectUrl
   selectedWorkspace = process.env.selectedWorkspace
-  workflowPath= process.env.workflowPath
+  workflowPath = process.env.workflowPath
 
 } else {
   const splitted = process.env.parameters.split('--xxx--')
@@ -39,7 +39,7 @@ if (process.env.LOCAL === 'true') {
   selectedContainer = splitted[6]
   projectUrl = splitted[7]
   selectedWorkspace = splitted[8]
-  workflowPath=splitted[9]
+  workflowPath = splitted[9]
 
 
 }
@@ -49,21 +49,21 @@ if (process.env.LOCAL === 'true') {
 const feturl = `${projectUrl}/${workflowPath}/.json?auth=${idToken}`
 debugger;
 fetch(feturl).then(response => response.json()).then(async data => {
- 
-  const {screenName,selectedRepo} =data
 
- 
-debugger;
- 
+  const { screenName, selectedRepo } = data
+
+  console.log('data...', data)
+  debugger;
 
 
-  
+
+
   //1.GET CONTENTS FROM WORKFLOW REPO
-  const tree = await getWorkflowSourceCodeTree({ owner:screenName, repo:selectedRepo, token: gh_token })
+  const tree = await getWorkflowSourceCodeTree({ owner: screenName, repo: selectedRepo, token: gh_token })
 
-  const contents = await getContentsFromWorkflowRepo({ owner:screenName, repo:selectedRepo, tree, token: gh_token })
+  const contents = await getContentsFromWorkflowRepo({ owner: screenName, repo: selectedRepo, tree, token: gh_token })
   //2.SAVE CONTENT TO ROOT FOLDER
-debugger;
+  debugger;
   for (let c of contents) {
     const { content, path } = c
     const utfContent = Buffer.from(content, 'base64').toString('utf-8')
@@ -76,7 +76,7 @@ debugger;
 
   }
 
-debugger;
+  debugger;
   //3.INSTALL DEPENDENECIES
 
   let dependencyArray = []
@@ -86,7 +86,7 @@ debugger;
   const { dependencies: originalDependencies } = require(`${process.cwd()}/${selectedRepo}/package.json`)
 
 
-debugger;
+  debugger;
 
   for (let obj in originalDependencies) {
 
@@ -134,7 +134,7 @@ async function getContentsFromWorkflowRepo({ owner, repo, tree, token }) {
   const getContent = async function ({ path }) {
     const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
     const data = await response.json()
-debugger;
+    debugger;
     return data;
   }
 
@@ -174,7 +174,7 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
 // process.on('exit',   async()=> {
 //   debugger;
 //   try {
-    
+
 
 //   if (filterComplete.length > 0) {
 
@@ -194,18 +194,18 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
 // }
 // });
 debugger;
- async function triggerAction({ ticket, body, gh_action_url }) {
+async function triggerAction({ ticket, body, gh_action_url }) {
   debugger;
 
-     await fetch(gh_action_url, {
-      method: 'post',
-      headers: {
-        authorization: `token ${ticket}`,
-        Accept: 'application/vnd.github.v3+json'
-      },
-      body
-    })
- 
+  await fetch(gh_action_url, {
+    method: 'post',
+    headers: {
+      authorization: `token ${ticket}`,
+      Accept: 'application/vnd.github.v3+json'
+    },
+    body
+  })
+
 
 }
 /*
