@@ -1,0 +1,19 @@
+{
+  "name": "workflow_a",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codergihub/workflow_a.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codergihub/workflow_a/issues"
+  },
+  "homepage": "https://github.com/codergihub/workflow_a#readme"
+}

@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "../wflows"
+		},
+		{
+			"path": "../workflow_a"
 		}
 	],
 	"settings": {
