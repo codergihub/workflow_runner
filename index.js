@@ -52,9 +52,7 @@ fetch(feturl).then(response => response.json()).then(async data => {
   debugger;
   const entries = Object.entries(data)
   const { screenName, selectedRepo } = entries[0][1]
-  debugger;
-  console.log('data...', data)
-  debugger;
+
 
 
 
@@ -134,7 +132,7 @@ async function getContentsFromWorkflowRepo({ owner, repo, tree, token }) {
 
   const getContent = async function ({ path }) {
     const fetchPath = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`
-    console.log('fetchpath----', fetchPath)
+ 
     const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
     const data = await response.json()
     debugger;
@@ -159,10 +157,10 @@ async function getWorkflowSourceCodeTree({ owner, repo, token }) {
   //---- List branches endpoint----
   /*required for the next endoint*/
   const fetchPath = `https://api.github.com/repos/${owner}/${repo}/branches`
-  console.log('fetchpath...', fetchPath)
+
   const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
   const data = await response.json()
-  console.log('data !!!!!', data)
+
   const mainSha = data.find(d => d.name === 'main')
   const { commit: { sha } } = mainSha
 
