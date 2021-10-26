@@ -46,48 +46,7 @@ if (process.env.LOCAL === 'true') {
 
 
 }
-const data = {
-  "Task 1": {
-    taskorder: "1",
-    workflows: {
-      "1635152857846": {
-        isPrivate: false,
-        screenName: "codergihub",
-        selectedBranch: "main",
-        selectedRepo: "books",
-        tokenFPR: "",
-        workflowDescription: "w",
-        workflowName: "codergihub_books_main",
-        workflowOrder: "1",
-      },
-      "1635153062412": {
-        isPrivate: false,
-        screenName: "codergihub",
-        selectedBranch: "main",
-        selectedRepo: "books",
-        tokenFPR: "",
-        workflowDescription: "k/jeans",
-        workflowName: "codergihub_books_main",
-        workflowOrder: "2",
-      },
-    },
-  },
-  "Task 2": {
-    taskorder: "2",
-    workflows: {
-      "1635220515391": {
-        isPrivate: false,
-        screenName: "codergihub",
-        selectedBranch: "main",
-        selectedRepo: "defacto",
-        tokenFPR: "",
-        workflowDescription: "d",
-        workflowName: "codergihub_defacto_main",
-        workflowOrder: "1",
-      },
-    },
-  },
-}
+
 //1.get workflows info from firebase
 
 const fetchUrl = `${projectUrl}/workspaces/${selectedWorkspace}/tasks/.json?auth=${idToken}`
@@ -113,6 +72,7 @@ fetch(fetchUrl).then(response => response.json()).then(data => {
   const taskRunnerEmitter = taskRunner({ tasks: queque })
   taskRunnerEmitter.emit(taskEvents.START_TASK_RUNNER, {})
 }).catch(error => {
+  console.log('error',error)
   debugger;
 })
 

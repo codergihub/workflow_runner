@@ -21,10 +21,12 @@ class TaskListender extends EventEmitter {
             workflowKey }) {
             const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
             debugger;
-            if(nextWorkflow){
+            if (nextWorkflow) {
                 await runRepo({ workflow: nextWorkflow, taskEmitter: this })
+            } else {
+                process.exit(0)
             }
-          
+
 
             debugger;
         })
