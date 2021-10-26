@@ -42,6 +42,17 @@ if (process.env.LOCAL === 'true') {
   process.env.selectedContainer = splitted[6]
   process.env.projectUrl = splitted[7]
   process.env.selectedWorkspace = splitted[8]
+  
+  gh_token = splitted[0]
+  owner = splitted[1]
+  idToken = splitted[2]
+  email = splitted[3]
+  localId = splitted[4]
+  refreshToken = splitted[5]
+  selectedContainer = splitted[6]
+  projectUrl = splitted[7]
+  selectedWorkspace = splitted[8]
+  
   // workflowPath = splitted[9]
 
 
