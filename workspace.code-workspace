@@ -14,6 +14,18 @@
 		},
 		{
 			"path": "../workflow_a"
+		},
+		{
+			"path": "../workflow_a_a"
+		},
+		{
+			"path": "../workflow_a_b"
+		},
+		{
+			"path": "../workflow_a_c"
+		},
+		{
+			"path": "../workflow_a_a_a"
 		}
 	],
 	"settings": {
