@@ -61,6 +61,8 @@ if (process.env.LOCAL === 'true') {
 //1.get workflows info from firebase
 
 const fetchUrl = `${projectUrl}/workspaces/${selectedWorkspace}/tasks/.json?auth=${idToken}`
+
+console.log('fetchUrl',fetchUrl)
 debugger;
 fetch(fetchUrl).then(response => response.json()).then(data => {
   const queque = []
