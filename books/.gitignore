@@ -1,7 +1,0 @@
-.idea
-*.log
-node_modules
-yarn.lock
-.env
-
-books.json
