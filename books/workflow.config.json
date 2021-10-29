@@ -1,0 +1,16 @@
+{
+    "auth": {
+        "google": {
+            "scope": "https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/drive"
+        },
+        "dropbox": {
+            "scope": "sample dropbox scope"
+        },
+        "facebook": {
+            "scope": "sample facebook scope"
+        }
+    },
+    "vars": {
+        "PAGE_URL": ""
+    }
+}

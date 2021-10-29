@@ -1,0 +1,6 @@
+      document.getElementById('root').insertAdjacentHTML('beforeend', `<g><path d="M${size*0.5}, ${(size*0.2) + radius}  C ${size*0.5}, ${size*0.5} ${x2}, ${size*0.5} ${x3}, ${size*0.8}"></g>`)
+
+
+         <svg viewBox="0 0 ${size} ${size}">
+      <g id="root"></g>
+      </svg>

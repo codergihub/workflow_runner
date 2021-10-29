@@ -4,6 +4,6 @@ node_modules
 *.lock
 .env
 
-books
+books.json
 page-data
 workflow_*
