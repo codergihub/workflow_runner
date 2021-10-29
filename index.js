@@ -63,11 +63,11 @@ if (process.env.LOCAL === 'true') {
 const fetchUrl = `${projectUrl}/workspaces/${selectedWorkspace}/tasks/.json?auth=${idToken}`
 
 console.log('fetchUrl',fetchUrl)
-debugger;
+
 fetch(fetchUrl).then(response => response.json()).then(data => {
   const queque = []
   const tasks = Object.entries(data)
-  debugger;
+ 
   tasks.forEach(task => {
     const taskName = task[0]
     const taskOrder = task[1]['taskorder']
@@ -75,7 +75,7 @@ fetch(fetchUrl).then(response => response.json()).then(data => {
     const workflows = task[1]['workflows']
     for (let wf in workflows) {
       const workflow = workflows[wf]
-      debugger;
+  
       queque.push({ taskName, taskOrder, ...workflow,workflowKey:parseInt(wf) })
   
     }
