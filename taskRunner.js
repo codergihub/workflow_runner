@@ -1,9 +1,11 @@
+const { fbRest } = require('./firebase-rest')
+debugger;
 const EventEmitter = require('events');
 const { runRepo } = require('./runRepo')
-const { firebase: { fbRest } } = require('wflows')
+debugger;
 
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
-
+debugger;
 /*
 
   process.env.gh_token = splitted[0]
@@ -31,15 +33,16 @@ class TaskListender extends EventEmitter {
             const workflow = this.tasks[0]
         
             const fbWorkflowRef = `workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskName}/workflows/${workflow.workflowKey}/workflowConfig/vars`
-       
+       debugger;
             fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
-
+debugger;
                 const data =Object.entries(response.data)
+                process.env.AA_SAMPLE_ENV='THIS IS SAMPLE'
                 data.forEach(d=>{
                     process.env[d[0]]=d[1]
-               
+               debugger;
                 })
-           
+           debugger
 
                 await runRepo({ workflow, taskEmitter: this })
             })

@@ -7,7 +7,7 @@ const pather = require('path')
 
 var exec = require('child_process').exec
 async function runRepo({ workflow, taskEmitter }) {
-    
+    debugger;
     const { screenName, selectedRepo,
         taskName ,
         workflowKey} = workflow
@@ -17,7 +17,7 @@ async function runRepo({ workflow, taskEmitter }) {
     
     //1.GET CONTENTS FROM WORKFLOW REPO
     const tree = await getWorkflowSourceCodeTree({ owner: screenName, repo: selectedRepo, token: gh_token })
-
+debugger;
     const contents = await getContentsFromWorkflowRepo({ owner: screenName, repo: selectedRepo, tree, token: gh_token })
     //2.SAVE CONTENT TO ROOT FOLDER
 
@@ -31,7 +31,7 @@ async function runRepo({ workflow, taskEmitter }) {
         fs.writeFileSync(filepath, utfContent)
 
     }
-
+debugger;
 
     //3.INSTALL DEPENDENECIES
 
@@ -41,7 +41,7 @@ async function runRepo({ workflow, taskEmitter }) {
 
     const { dependencies: originalDependencies } = require(`${process.cwd()}/${selectedRepo}/package.json`)
 
-
+debugger;
 
 
     for (let obj in originalDependencies) {
@@ -51,10 +51,12 @@ async function runRepo({ workflow, taskEmitter }) {
 
     }
     dependencies = dependencyArray.join(' ')
-
+debugger;
     console.log('dependencies....', dependencies)
     //npm i ${dependencies}
+    //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
     var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, function (err, stdout, stderr) {
+        debugger;
         console.log('stderr', stderr)
         if (err) {
 

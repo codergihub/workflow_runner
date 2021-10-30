@@ -1,11 +1,6 @@
-require('dotenv').config()
-const fetch = require('node-fetch')
-const fs = require('fs')
-const makeDir = require('make-dir');
-const pather = require('path')
+//require('dotenv').config()
 
-const { taskRunner, taskEvents } = require('./taskRunner')
-var exec = require('child_process').exec
+//var exec = require('child_process').exec
 
 var gh_token = ''
 var owner = ''
@@ -16,23 +11,24 @@ var refreshToken = ''
 var selectedContainer = ''
 var selectedWorkspace = ''
 var projectUrl = ''
-var filterComplete = ''
+//var filterComplete = ''
 //var workflowPath = ''
-if (process.env.LOCAL === 'true') {
-  gh_token = process.env.token
-  owner = process.env.owner
-  idToken = process.env.idToken
-  email = process.env.email
-  localId = process.env.localId
-  refreshToken = process.env.refreshToken
-  selectedContainer = process.env.selectedContainer
-  projectUrl = process.env.projectUrl
-  selectedWorkspace = process.env.selectedWorkspace
-  //workflowPath = process.env.workflowPath
+// if (process.env.LOCAL === 'true') {
+//   gh_token = process.env.token
+//   owner = process.env.owner
+//   idToken = process.env.idToken
+//   email = process.env.email
+//   localId = process.env.localId
+//   refreshToken = process.env.refreshToken
+//   selectedContainer = process.env.selectedContainer
+//   projectUrl = process.env.projectUrl
+//   selectedWorkspace = process.env.selectedWorkspace
+//   //workflowPath = process.env.workflowPath
 
-} else {
+// } else {
 
   const splitted = process.env.parameters.split('--xxx--')
+  debugger;
   process.env.gh_token = splitted[0]
   process.env.owner = splitted[1]
   process.env.idToken = splitted[2]
@@ -56,13 +52,18 @@ if (process.env.LOCAL === 'true') {
   // workflowPath = splitted[9]
 
 
-}
+//}
+const fetch = require('node-fetch')
+//const fs = require('fs')
+//const makeDir = require('make-dir');
+//const pather = require('path')
 
+const { taskRunner, taskEvents } = require('./taskRunner')
 //1.get workflows info from firebase
 
 const fetchUrl = `${projectUrl}/workspaces/${selectedWorkspace}/tasks/.json?auth=${idToken}`
 
-console.log('fetchUrl',fetchUrl)
+//console.log('fetchUrl',fetchUrl)
 
 fetch(fetchUrl).then(response => response.json()).then(data => {
   const queque = []
