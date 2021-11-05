@@ -61,7 +61,7 @@ const fetch = require('node-fetch')
 const { taskRunner, taskEvents } = require('./taskRunner')
 //1.get workflows info from firebase
 
-const fetchUrl = `${projectUrl}/workspaces/${selectedWorkspace}/tasks/.json?auth=${idToken}`
+const fetchUrl = `${projectUrl}/server/workspaces/${selectedWorkspace}/tasks/.json?auth=${idToken}`
 
 //console.log('fetchUrl',fetchUrl)
 
@@ -70,18 +70,19 @@ fetch(fetchUrl).then(response => response.json()).then(data => {
   const tasks = Object.entries(data)
  
   tasks.forEach(task => {
-    const taskName = task[0]
+    const taskId = task[0]
     const taskOrder = task[1]['taskorder']
-  
+  debugger;
     const workflows = task[1]['workflows']
+    const taskName = task[1]['taskName']
     for (let wf in workflows) {
       const workflow = workflows[wf]
-  
-      queque.push({ taskName, taskOrder, ...workflow,workflowKey:parseInt(wf) })
+      
+      queque.push({ taskId,taskName, taskOrder, ...workflow,workflowKey:parseInt(wf) })
   
     }
    
-  
+  debugger;
   })
   const taskRunnerEmitter = taskRunner({ tasks: queque })
   taskRunnerEmitter.emit(taskEvents.START_TASK_RUNNER, {})

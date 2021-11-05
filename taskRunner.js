@@ -32,11 +32,12 @@ class TaskListender extends EventEmitter {
         this.on(taskEvents.START_TASK_RUNNER, async function () {
             const workflow = this.tasks[0]
         
-            const fbWorkflowRef = `workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskName}/workflows/${workflow.workflowKey}/workflowConfig/vars`
+            const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/workflowConfig/vars`
        debugger;
             fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
 debugger;
                 const data =Object.entries(response.data)
+
                 process.env.AA_SAMPLE_ENV='THIS IS SAMPLE'
                 data.forEach(d=>{
                     process.env[d[0]]=d[1]
@@ -54,7 +55,7 @@ debugger;
             const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
             debugger;
             if (nextWorkflow) {
-                const fbWorkflowRef = `workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskName}/workflows/${workflow.workflowKey}/workflowConfig/vars`
+                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/workflowConfig/vars`
        
                 fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
     
@@ -80,7 +81,7 @@ debugger;
             const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
             debugger;
             if (nextWorkflow) {
-                const fbWorkflowRef = `workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskName}/workflows/${workflow.workflowKey}/workflowConfig/vars`
+                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/workflowConfig/vars`
        
                 fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
     
