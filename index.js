@@ -71,14 +71,14 @@ fetch(fetchUrl).then(response => response.json()).then(data => {
  
   tasks.forEach(task => {
     const taskId = task[0]
-    const taskOrder = task[1]['taskorder']
+
   debugger;
     const workflows = task[1]['workflows']
     const taskName = task[1]['taskName']
     for (let wf in workflows) {
       const workflow = workflows[wf]
       
-      queque.push({ taskId,taskName, taskOrder, ...workflow,workflowKey:parseInt(wf) })
+      queque.push({ taskId,taskName, ...workflow,workflowKey:parseInt(wf) })
   
     }
    

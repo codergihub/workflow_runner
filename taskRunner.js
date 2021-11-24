@@ -55,7 +55,7 @@ debugger;
             const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
             debugger;
             if (nextWorkflow) {
-                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/workflowConfig/vars`
+                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/workflowConfig/vars`
        
                 fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
     
@@ -66,7 +66,7 @@ debugger;
                     })
                
     
-                    await runRepo({ workflow, taskEmitter: this })
+                    await runRepo({ workflow:nextWorkflow, taskEmitter: this })
                 })
             } else {
                 process.exit(0)
@@ -81,7 +81,7 @@ debugger;
             const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
             debugger;
             if (nextWorkflow) {
-                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/workflowConfig/vars`
+                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/workflowConfig/vars`
        
                 fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
     
@@ -92,7 +92,7 @@ debugger;
                     })
                
     
-                    await runRepo({ workflow, taskEmitter: this })
+                    await runRepo({ workflow:nextWorkflow, taskEmitter: this })
                 })
             } else {
                 process.exit(0)
