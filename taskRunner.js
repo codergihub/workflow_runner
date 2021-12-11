@@ -1,11 +1,11 @@
 const { fbRest } = require('./firebase-rest')
-debugger;
+
 const EventEmitter = require('events');
 const { runRepo } = require('./runRepo')
-debugger;
+const {timespan}= require('./utils/timespan')
 
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
-debugger;
+
 /*
 
   process.env.gh_token = splitted[0]
@@ -31,19 +31,19 @@ class TaskListender extends EventEmitter {
         this.tasks = tasks
         this.on(taskEvents.START_TASK_RUNNER, async function () {
             const workflow = this.tasks[0]
-        
-            const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/workflowConfig/vars`
-       debugger;
-            fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
-debugger;
-                const data =Object.entries(response.data)
 
-                process.env.AA_SAMPLE_ENV='THIS IS SAMPLE'
-                data.forEach(d=>{
-                    process.env[d[0]]=d[1]
-               debugger;
+            const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/workflowConfig/vars`
+
+            fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
+
+                const data = Object.entries(response.data)
+
+                process.env.AA_SAMPLE_ENV = 'THIS IS SAMPLE'
+                data.forEach(d => {
+                    process.env[d[0]] = d[1]
+
                 })
-           debugger
+                debugger
 
                 await runRepo({ workflow, taskEmitter: this })
             })
@@ -53,48 +53,69 @@ debugger;
         this.on(taskEvents.TASK_RUN_SUCCESSFUL, async function ({ taskName,
             workflowKey }) {
             const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
-            debugger;
+
             if (nextWorkflow) {
+                debugger;
                 const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/workflowConfig/vars`
-       
+
                 fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
-    
-                    const data =Object.entries(response.data)
-                    data.forEach(d=>{
-                        process.env[d[0]]=d[1]
-                   
+                    debugger;
+                    const data = Object.entries(response.data)
+                    debugger;
+                    data.forEach(d => {
+                        process.env[d[0]] = d[1]
+
                     })
-               
-    
-                    await runRepo({ workflow:nextWorkflow, taskEmitter: this })
+
+
+                    await runRepo({ workflow: nextWorkflow, taskEmitter: this })
                 })
             } else {
-                process.exit(0)
+                try {
+              
+                    var date1 = new Date(parseInt(process.env.runid)) 
+                    var date2 = new Date(global.endTime.getTime())
+                    const {hours,mins,seconds} =timespan(date2,date1)
+                    const duration =`${hours}:${mins}:${seconds}`
+                    const update = { [`runs/workspaces/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2,duration, end:global.endTime.getTime() } }
+                    fbDatabase.ref('/').update(update, async (error, data) => {
+                        debugger;
+                        console.log('Tasks complete1....')
+                        process.exit(0)
+
+                    })
+                } catch (error) {
+                    console.log('error', error)
+                }
+
+                debugger;
+
             }
 
 
-            debugger;
+
         })
         this.on(taskEvents.TASK_RUN_FAILED, async function ({ taskName,
             workflowKey }) {
-            debugger;
+
             const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
-            debugger;
+
             if (nextWorkflow) {
                 const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/workflowConfig/vars`
-       
+
                 fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
-    
-                    const data =Object.entries(response.data)
-                    data.forEach(d=>{
-                        process.env[d[0]]=d[1]
-                   
+
+                    const data = Object.entries(response.data)
+                    data.forEach(d => {
+                        process.env[d[0]] = d[1]
+
                     })
-               
-    
-                    await runRepo({ workflow:nextWorkflow, taskEmitter: this })
+
+
+                    await runRepo({ workflow: nextWorkflow, taskEmitter: this })
                 })
             } else {
+                console.log('Tasks complete2....')
                 process.exit(0)
             }
         })

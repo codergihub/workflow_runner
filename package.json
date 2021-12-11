@@ -1,6 +1,6 @@
 {
   "name": "workflow_runner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "url": "https://github.com/webapis/workflow_runner/issues"
   },
   "homepage": "https://github.com/webapis/workflow_runner#readme",
-  "dependencies": {
+  "devDependencies": {
     "dotenv": "^10.0.0",
     "eventsource": "^1.1.0",
     "make-dir": "^3.1.0",
@@ -26,4 +26,5 @@
     "puppeteer": "^10.4.0",
     "wflows": "^1.2.7"
   }
+
 }

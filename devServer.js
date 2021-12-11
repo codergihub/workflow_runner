@@ -5,7 +5,7 @@ const http = require('http');
 
 
 const server = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Origin', 'https://localhost:8888');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
   let data = [];
@@ -25,7 +25,7 @@ const server = http.createServer((req, res) => {
           const body = JSON.parse(data);
           const { inputs: { projectName, parameters } } = body
           process.env.parameters = parameters
-          debugger;
+          
        
           const main = `${process.cwd()}/index.js`
 
@@ -42,7 +42,7 @@ const server = http.createServer((req, res) => {
 
           worker.on("exit", exitCode => {
             console.log(`DevServer exited with code ${exitCode}`);
-            debugger;
+            
 
           })
         }
