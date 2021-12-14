@@ -2,8 +2,8 @@ const { fbRest } = require('./firebase-rest')
 
 const EventEmitter = require('events');
 const { runRepo } = require('./runRepo')
-const {timespan}= require('./utils/timespan')
-
+const { timespan } = require('./utils/timespan')
+const fetch = require('node-fetch')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
 
 /*
@@ -72,18 +72,20 @@ class TaskListender extends EventEmitter {
                 })
             } else {
                 try {
-              
-                    var date1 = new Date(parseInt(process.env.runid)) 
+
+                    var date1 = new Date(parseInt(process.env.runid))
                     var date2 = new Date(global.endTime.getTime())
-                    const {hours,mins,seconds} =timespan(date2,date1)
-                    const duration =`${hours}:${mins}:${seconds}`
-                    const update = { [`runs/workspaces/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2,duration, end:global.endTime.getTime() } }
+                    const { hours, mins, seconds } = timespan(date2, date1)
+                    const duration = `${hours}:${mins}:${seconds}`
+                    const update = { [`runs/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2, duration, end: global.endTime.getTime(), runid: date1.getTime() } }
                     fbDatabase.ref('/').update(update, async (error, data) => {
                         debugger;
                         console.log('Tasks complete1....')
                         process.exit(0)
 
                     })
+
+
                 } catch (error) {
                     console.log('error', error)
                 }
