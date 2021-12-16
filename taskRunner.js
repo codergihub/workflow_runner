@@ -73,11 +73,12 @@ class TaskListender extends EventEmitter {
             } else {
                 try {
 
-                    var date1 = new Date(parseInt(process.env.runid))
+                    var date1 = new Date(parseInt(process.env.start))
                     var date2 = new Date(global.endTime.getTime())
                     const { hours, mins, seconds } = timespan(date2, date1)
                     const duration = `${hours}:${mins}:${seconds}`
-                    const update = { [`runs/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2, duration, end: global.endTime.getTime(), runid: date1.getTime() } }
+                    const start =parseInt(process.env.start)
+                    const update = { [`runs/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2, duration, end: global.endTime.getTime(), start } }
                     fbDatabase.ref('/').update(update, async (error, data) => {
                         debugger;
                         console.log('Tasks complete1....')

@@ -39,7 +39,7 @@ process.env.selectedContainer = splitted[6]
 process.env.projectUrl = splitted[7]
 process.env.selectedWorkspace = splitted[8]
 process.env.runid = splitted[9]
-
+process.env.start = splitted[10]
 gh_token = splitted[0]
 owner = splitted[1]
 idToken = splitted[2]
@@ -49,14 +49,14 @@ refreshToken = splitted[5]
 selectedContainer = splitted[6]
 projectUrl = splitted[7]
 selectedWorkspace = splitted[8]
-
+debugger;
 // workflowPath = splitted[9]
 
 
 //}
 console.log('process.env.runid___',process.env.runid)
 
-global.endTime=new Date(parseInt(process.env.runid))
+global.endTime=new Date(parseInt(process.env.start))
 setInterval(()=>{
   global.endTime.setSeconds(global.endTime.getSeconds() + 1)
 
