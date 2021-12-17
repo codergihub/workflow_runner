@@ -26,8 +26,8 @@ const server = http.createServer((req, res) => {
           const { inputs: { projectName, parameters } } = body
           process.env.parameters = parameters
           
-       //  const main = `${process.cwd()}/index.js`
-          const main = './index.js'
+       
+          const main = `${__dirname}/index.js`
 
           const worker = new Worker(main, { workerData: {} });
 
