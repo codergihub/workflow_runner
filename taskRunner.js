@@ -72,19 +72,21 @@ class TaskListender extends EventEmitter {
                 })
             } else {
                 try {
-                    if(process.env.GITHUB_RUN_ID){
+                    let html_url = ''
+                    if (process.env.GITHUB_RUN_ID) {
                         const fetchPath = `https://api.github.com/repos/${process.env.owner}/workflow_runner/actions/runs/${process.env.GITHUB_RUN_ID}`
 
-                        const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${ process.env.gh_token}` } })
+                        const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${process.env.gh_token}` } })
                         const data = await response.json()
-                        console.log('GITHUB_RUN_DATA',data)
+                        html_url = data.html_url
+                        console.log('GITHUB_RUN_DATA', data)
                     }
                     var date1 = new Date(parseInt(process.env.start))
                     var date2 = new Date(global.endTime.getTime())
                     const { hours, mins, seconds } = timespan(date2, date1)
                     const duration = `${hours}:${mins}:${seconds}`
-                    const start =parseInt(process.env.start)
-                    const update = { [`runs/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2, duration, end: global.endTime.getTime(), start } }
+                    const start = parseInt(process.env.start)
+                    const update = { [`runs/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2, duration, end: global.endTime.getTime(), start, html_url } }
                     fbDatabase.ref('/').update(update, async (error, data) => {
                         debugger;
                         console.log('Tasks complete1....')
