@@ -73,7 +73,7 @@ class TaskListender extends EventEmitter {
             } else {
                 try {
                     if(process.env.GITHUB_RUN_ID){
-                        const fetchPath = `https://api.github.com/repos/${process.env.owner}/workflow_runner/actions/${process.env.GITHUB_RUN_ID}`
+                        const fetchPath = `https://api.github.com/repos/${process.env.owner}/workflow_runner/actions/runs/${process.env.GITHUB_RUN_ID}`
 
                         const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${ process.env.gh_token}` } })
                         const data = await response.json()
