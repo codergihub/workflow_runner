@@ -54,9 +54,9 @@ debugger;
 
 
 //}
-console.log('process.env.runid___',process.env.runid)
+console.log('process.env.GITHUB_RUN_ID',process.env.GITHUB_RUN_ID)
 
-global.endTime=new Date(parseInt(process.env.start))
+global.endTime=new Date()
 setInterval(()=>{
   global.endTime.setSeconds(global.endTime.getSeconds() + 1)
 

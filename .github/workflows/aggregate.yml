@@ -13,6 +13,8 @@ on:
       parameters:
        description: 'Parameters'
        required: true
+env:
+  CLOUD: true
 jobs:
   aggregator:
     runs-on: ubuntu-latest
