@@ -72,7 +72,13 @@ class TaskListender extends EventEmitter {
                 })
             } else {
                 try {
+                    if(process.env.GITHUB_RUN_ID){
+                        const fetchPath = `https://api.github.com/repos/${process.env.owner}/workflow_runner/actions/${process.env.GITHUB_RUN_ID}`
 
+                        const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${ process.env.gh_token}` } })
+                        const data = await response.json()
+                        console.log('GITHUB_RUN_DATA',data)
+                    }
                     var date1 = new Date(parseInt(process.env.start))
                     var date2 = new Date(global.endTime.getTime())
                     const { hours, mins, seconds } = timespan(date2, date1)
