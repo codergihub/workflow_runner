@@ -28,7 +28,7 @@ var projectUrl = ''
 // } else {
 
 const splitted = process.env.parameters.split('--xxx--')
-debugger;
+
 process.env.gh_token = splitted[0]
 process.env.owner = splitted[1]
 process.env.idToken = splitted[2]
@@ -49,7 +49,7 @@ refreshToken = splitted[5]
 selectedContainer = splitted[6]
 projectUrl = splitted[7]
 selectedWorkspace = splitted[8]
-debugger;
+
 // workflowPath = splitted[9]
 
 
@@ -77,7 +77,7 @@ fetch(fetchUrl).then(response => response.json()).then(data => {
   tasks.forEach(task => {
     const taskId = task[0]
 
-    debugger;
+    
     const workflows = task[1]['workflows']
     const taskName = task[1]['taskName']
     for (let wf in workflows) {
@@ -87,13 +87,13 @@ fetch(fetchUrl).then(response => response.json()).then(data => {
 
     }
 
-    debugger;
+    
   })
   const taskRunnerEmitter = taskRunner({ tasks: queque })
   taskRunnerEmitter.emit(taskEvents.START_TASK_RUNNER, {})
 }).catch(error => {
   console.log('error', error)
-  debugger;
+  
 })
 
 

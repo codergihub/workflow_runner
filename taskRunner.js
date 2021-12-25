@@ -32,18 +32,26 @@ class TaskListender extends EventEmitter {
         this.on(taskEvents.START_TASK_RUNNER, async function () {
             const workflow = this.tasks[0]
 
-            const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/workflowConfig/vars`
+            const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
 
             fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
+           
+                debugger;
+                if (response && response.data) {
+                    const { data } = response
+                    debugger;
+                    for (let d in data) {
 
-                const data = Object.entries(response.data)
+                        let envName = data[d]['varName']
+                        let envValue = data[d]['value']
+                        process.env[envName] = envValue
+                        debugger;
+                    }
 
-                process.env.AA_SAMPLE_ENV = 'THIS IS SAMPLE'
-                data.forEach(d => {
-                    process.env[d[0]] = d[1]
+                }
 
-                })
-                debugger
+             
+           
 
                 await runRepo({ workflow, taskEmitter: this })
             })
@@ -56,19 +64,28 @@ class TaskListender extends EventEmitter {
 
             if (nextWorkflow) {
                 debugger;
-                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/workflowConfig/vars`
+                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/vars`
 
                 fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
+               
                     debugger;
-                    const data = Object.entries(response.data)
-                    debugger;
-                    data.forEach(d => {
-                        process.env[d[0]] = d[1]
-
-                    })
-
-
-                    await runRepo({ workflow: nextWorkflow, taskEmitter: this })
+                    if (response && response.data) {
+                        const { data } = response
+                        debugger;
+                        for (let d in data) {
+    
+                            let envName = data[d]['varName']
+                            let envValue = data[d]['value']
+                            process.env[envName] = envValue
+                            debugger;
+                        }
+    
+                    }
+    
+                 
+               
+    
+                    await runRepo({ workflow:nextWorkflow, taskEmitter: this })
                 })
             } else {
                 try {
@@ -112,19 +129,29 @@ class TaskListender extends EventEmitter {
             const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
 
             if (nextWorkflow) {
-                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/workflowConfig/vars`
+                 const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/vars`
 
-                fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
+            fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
+           
+                debugger;
+                if (response && response.data) {
+                    const { data } = response
+                    debugger;
+                    for (let d in data) {
 
-                    const data = Object.entries(response.data)
-                    data.forEach(d => {
-                        process.env[d[0]] = d[1]
+                        let envName = data[d]['varName']
+                        let envValue = data[d]['value']
+                        process.env[envName] = envValue
+                        debugger;
+                    }
 
-                    })
+                }
 
+             
+           
 
-                    await runRepo({ workflow: nextWorkflow, taskEmitter: this })
-                })
+                await runRepo({  workflow:nextWorkflow, taskEmitter: this })
+            })
             } else {
                 console.log('Tasks complete2....')
                 process.exit(0)

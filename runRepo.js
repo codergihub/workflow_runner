@@ -131,7 +131,7 @@ debugger;
 
         const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
         const data = await response.json()
-        
+        debugger;
         const mainSha = data.find(d => d.name === 'main')
         const { commit: { sha } } = mainSha
 
