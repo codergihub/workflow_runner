@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node  index.js",
-    "dev": "node devServer.js"
+    "dev": "SET LOCAL=true&node devServer.js"
   },
   "repository": {
     "type": "git",
@@ -23,8 +23,6 @@
     "eventsource": "^1.1.0",
     "make-dir": "^3.1.0",
     "node-fetch": "2.6.1",
-    "puppeteer": "^10.4.0",
-    "wflows": "^1.2.7"
+    "puppeteer": "^7.1.0"
   }
-
 }

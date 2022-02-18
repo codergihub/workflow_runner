@@ -1,6 +1,6 @@
 //require('dotenv').config()
 const fetch = require('node-fetch')
-//var exec = require('child_process').exec
+
 
 var gh_token = ''
 var owner = ''
@@ -11,21 +11,7 @@ var refreshToken = ''
 var selectedContainer = ''
 var selectedWorkspace = ''
 var projectUrl = ''
-//var filterComplete = ''
-//var workflowPath = ''
-// if (process.env.LOCAL === 'true') {
-//   gh_token = process.env.token
-//   owner = process.env.owner
-//   idToken = process.env.idToken
-//   email = process.env.email
-//   localId = process.env.localId
-//   refreshToken = process.env.refreshToken
-//   selectedContainer = process.env.selectedContainer
-//   projectUrl = process.env.projectUrl
-//   selectedWorkspace = process.env.selectedWorkspace
-//   //workflowPath = process.env.workflowPath
 
-// } else {
 
 const splitted = process.env.parameters.split('--xxx--')
 
@@ -51,7 +37,7 @@ projectUrl = splitted[7]
 selectedWorkspace = splitted[8]
 
 // workflowPath = splitted[9]
-
+debugger;
 
 //}
 console.log('process.env.GITHUB_RUN_ID',process.env.GITHUB_RUN_ID)
@@ -69,9 +55,10 @@ const { taskRunner, taskEvents } = require('./taskRunner')
 const fetchUrl = `${projectUrl}/server/workspaces/${selectedWorkspace}/tasks/.json?auth=${idToken}`
 
 //console.log('fetchUrl',fetchUrl)
-
+debugger;
 fetch(fetchUrl).then(response => response.json()).then(data => {
   const queque = []
+  debugger;
   const tasks = Object.entries(data)
 
   tasks.forEach(task => {

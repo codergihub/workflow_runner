@@ -37,6 +37,8 @@ class TaskListender extends EventEmitter {
             fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
            
                 debugger;
+
+                //SET LOCAL VARS FROM STORAGE
                 if (response && response.data) {
                     const { data } = response
                     debugger;
@@ -52,7 +54,7 @@ class TaskListender extends EventEmitter {
 
              
            
-
+               
                 await runRepo({ workflow, taskEmitter: this })
             })
 
