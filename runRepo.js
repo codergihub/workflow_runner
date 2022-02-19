@@ -10,13 +10,14 @@ async function runRepo({ workflow, taskEmitter }) {
     debugger;
     const { screenName, selectedRepo,
         taskName ,
+        selectedBranch,
         workflowKey} = workflow
 
-    
+    debugger;
     const gh_token = process.env.gh_token
     
     //1.GET CONTENTS FROM WORKFLOW REPO
-    const tree = await getWorkflowSourceCodeTree({ owner: screenName, repo: selectedRepo, token: gh_token })
+    const tree = await getWorkflowSourceCodeTree({ owner: screenName, repo: selectedRepo, token: gh_token ,selectedBranch})
 debugger;
     const contents = await getContentsFromWorkflowRepo({ owner: screenName, repo: selectedRepo, tree, token: gh_token })
     //2.SAVE CONTENT TO ROOT FOLDER
@@ -121,7 +122,7 @@ debugger;
         return contents
     }
 
-    async function getWorkflowSourceCodeTree({ owner, repo, token }) {
+    async function getWorkflowSourceCodeTree({ owner, repo, token,selectedBranch }) {
 
         // Retrieve source code for project
         //Retrieved source code will be copied to project branch of forked agregators repo
@@ -132,7 +133,7 @@ debugger;
         const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
         const data = await response.json()
         debugger;
-        const mainSha = data.find(d => d.name === 'master')
+        const mainSha = data.find(d => d.name ===selectedBranch)
         const { commit: { sha } } = mainSha
 
         //------Git database / Get a tree endpoint------
