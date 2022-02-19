@@ -20,9 +20,9 @@
   },
   "homepage": "https://github.com/webapis/workflow_runner#readme",
   "devDependencies": {
-    "dotenv": "^10.0.0",
-    "eventsource": "^1.1.0",
-    "make-dir": "^3.1.0",
+    "dotenv": "10.0.0",
+    "eventsource": "1.1.0",
+    "make-dir": "3.1.0",
     "node-fetch": "2.6.1"
   }
 }
