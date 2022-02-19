@@ -41,6 +41,8 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+      - name: Install apify-cli
+        run: 'npm install -g apify-cli'
       - name: Install dependencies
         run: 'npm install'
       - name: aggregation step
