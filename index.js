@@ -14,7 +14,7 @@ var projectUrl = ''
 
 
 const splitted = process.env.parameters.split('--xxx--')
-
+console.log('splitted',splitted)
 process.env.gh_token = splitted[0]
 process.env.owner = splitted[1]
 process.env.idToken = splitted[2]
