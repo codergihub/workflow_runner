@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node  index.js",
-    "dev": "SET LOCAL=true&node devServer.js"
+    "dev": "SET LOCAL=true&node devServer.js",
+    "test:col15": "node col15/main.js"
   },
   "repository": {
     "type": "git",
