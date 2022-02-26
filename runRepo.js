@@ -6,10 +6,11 @@ const makeDir = require('make-dir');
 const pather = require('path')
 
 var exec = require('child_process').exec
-async function runRepo({ workflow, taskEmitter }) {
+async function runRepo({ workflow, workflowEmitter }) {
     debugger;
     const { screenName, selectedRepo,
         taskName ,
+        taskId,
         selectedBranch,
         workflowKey} = workflow
 
@@ -80,14 +81,14 @@ debugger;
 
             worker.on("error", error => {
                 console.log(error);
-                taskEmitter.emit("TASK_RUN_FAILED", { taskName,
+                workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskName,
                     workflowKey })
             });
 
             worker.on("exit", exitCode => {
                 console.log(`It exited with code ${exitCode}`);
             debugger;
-                taskEmitter.emit("TASK_RUN_SUCCESSFUL", { taskName, workflowKey })
+                workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskName,taskId, workflowKey })
             })
             setInterval(() => { }, 5000)
         }

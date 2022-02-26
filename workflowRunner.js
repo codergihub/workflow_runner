@@ -4,38 +4,27 @@ const EventEmitter = require('events');
 const { runRepo } = require('./runRepo')
 const { timespan } = require('./utils/timespan')
 const fetch = require('node-fetch')
+const { triggerNextTask } = require('./helper')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
 
-/*
 
-  process.env.gh_token = splitted[0]
-  process.env.owner = splitted[1]
-  process.env.idToken = splitted[2]
-  process.env.email = splitted[3]
-  process.env.localId = splitted[4]
-  process.env.refreshToken = splitted[5]
-  process.env.selectedContainer = splitted[6]
-  process.env.projectUrl = splitted[7]
-  process.env.selectedWorkspace = splitted[8]
-*/
-
-const taskEvents = {
-    START_TASK_RUNNER: 'START_TASK_RUNNER',
-    TASK_RUN_SUCCESSFUL: 'TASK_RUN_SUCCESSFUL',
-    TASK_RUN_FAILED: 'TASK_RUN_FAILED'
+const workflowEvents = {
+    START_WORKFLOW_RUNNER: 'START_WORKFLOW_RUNNER',
+    WORKFLOW_RUN_SUCCESSFUL: 'WORKFLOW_RUN_SUCCESSFUL',
+    WORKFLOW_RUN_FAILED: 'WORKFLOW_RUN_FAILED'
 }
 
-class TaskListender extends EventEmitter {
-    constructor({ tasks }) {
+class WorkFlowListender extends EventEmitter {
+    constructor({ workflows }) {
         super()
-        this.tasks = tasks
-        this.on(taskEvents.START_TASK_RUNNER, async function () {
-            const workflow = this.tasks[0]
+        this.workflows = workflows
+        this.on(workflowEvents.START_WORKFLOW_RUNNER, async function () {
+            const workflow = this.workflows[0]
 
             const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
 
             fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
-           
+
                 debugger;
 
                 //SET LOCAL VARS FROM STORAGE
@@ -52,42 +41,42 @@ class TaskListender extends EventEmitter {
 
                 }
 
-             
-           
-               
-                await runRepo({ workflow, taskEmitter: this })
+
+
+
+                await runRepo({ workflow, workflowEmitter: this })
             })
 
 
         })
-        this.on(taskEvents.TASK_RUN_SUCCESSFUL, async function ({ taskName,
+        this.on(workflowEvents.WORKFLOW_RUN_SUCCESSFUL, async function ({ taskName, taskId,
             workflowKey }) {
-            const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
+            const nextWorkflow = this.workflows.find(t => t.workflowKey > workflowKey)
 
             if (nextWorkflow) {
                 debugger;
                 const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/vars`
 
                 fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
-               
+
                     debugger;
                     if (response && response.data) {
                         const { data } = response
                         debugger;
                         for (let d in data) {
-    
+
                             let envName = data[d]['varName']
                             let envValue = data[d]['value']
                             process.env[envName] = envValue
                             debugger;
                         }
-    
+
                     }
-    
-                 
-               
-    
-                    await runRepo({ workflow:nextWorkflow, taskEmitter: this })
+
+
+
+
+                    await runRepo({ workflow: nextWorkflow, workflowEmitter: this })
                 })
             } else {
                 try {
@@ -108,11 +97,14 @@ class TaskListender extends EventEmitter {
                     const update = { [`runs/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2, duration, end: global.endTime.getTime(), start, html_url } }
                     fbDatabase.ref('/').update(update, async (error, data) => {
                         debugger;
-                        console.log('Tasks complete1....')
+                        console.log('workflows complete1....')
                         process.exit(0)
 
                     })
 
+                    if (process.env.runSequence === 'sequential' && process.env.runNext === 'true') {
+                        await triggerNextTask(taskId)
+                    }
 
                 } catch (error) {
                     console.log('error', error)
@@ -125,50 +117,50 @@ class TaskListender extends EventEmitter {
 
 
         })
-        this.on(taskEvents.TASK_RUN_FAILED, async function ({ taskName,
+        this.on(workflowEvents.WORKFLOW_RUN_FAILED, async function ({ taskName,
             workflowKey }) {
 
-            const nextWorkflow = this.tasks.find(t => t.workflowKey > workflowKey)
+            const nextWorkflow = this.workflows.find(t => t.workflowKey > workflowKey)
 
             if (nextWorkflow) {
-                 const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/vars`
+                const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${nextWorkflow.taskId}/workflows/${nextWorkflow.workflowKey}/vars`
 
-            fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
-           
-                debugger;
-                if (response && response.data) {
-                    const { data } = response
+                fbDatabase.ref(fbWorkflowRef).on('value', async (error, response) => {
+
                     debugger;
-                    for (let d in data) {
-
-                        let envName = data[d]['varName']
-                        let envValue = data[d]['value']
-                        process.env[envName] = envValue
+                    if (response && response.data) {
+                        const { data } = response
                         debugger;
+                        for (let d in data) {
+
+                            let envName = data[d]['varName']
+                            let envValue = data[d]['value']
+                            process.env[envName] = envValue
+                            debugger;
+                        }
+
                     }
 
-                }
 
-             
-           
 
-                await runRepo({  workflow:nextWorkflow, taskEmitter: this })
-            })
+
+                    await runRepo({ workflow: nextWorkflow, workflowEmitter: this })
+                })
             } else {
-                console.log('Tasks complete2....')
+                console.log('workflows complete2....')
                 process.exit(0)
             }
         })
 
     }
 }
-function taskRunner({ tasks }) {
-    const promiseEmitter = new TaskListender({ tasks });
+function workflowRunner({ workflows }) {
+    const promiseEmitter = new WorkFlowListender({ workflows });
     promiseEmitter.setMaxListeners(50);
     return promiseEmitter;
 }
 
 
-module.exports = { taskRunner, taskEvents }
+module.exports = { workflowRunner, workflowEvents }
 
 

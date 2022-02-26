@@ -1,16 +1,9 @@
 //require('dotenv').config()
 const fetch = require('node-fetch')
+const { workflowRunner, workflowEvents } = require('./workflowRunner')
+const {triggerNextTask}=require('./helper')
 
 
-var gh_token = ''
-var owner = ''
-var idToken = ''
-var email = ''
-var localId = ''
-var refreshToken = ''
-var selectedContainer = ''
-var selectedWorkspace = ''
-var projectUrl = ''
 
 
 const splitted = process.env.parameters.split('--xxx--')
@@ -26,21 +19,51 @@ process.env.projectUrl = splitted[7]
 process.env.selectedWorkspace = splitted[8]
 process.env.runid = splitted[9]
 process.env.start = splitted[10]
-gh_token = splitted[0]
-owner = splitted[1]
-idToken = splitted[2]
-email = splitted[3]
-localId = splitted[4]
-refreshToken = splitted[5]
-selectedContainer = splitted[6]
-projectUrl = splitted[7]
-selectedWorkspace = splitted[8]
+process.env.runNext=splitted[12]
 
-// workflowPath = splitted[9]
-debugger;
 
-//}
+const idToken = splitted[2]
+const projectUrl = splitted[7]
+const selectedWorkspace = splitted[8]
+const taskId=splitted[11]
+
 console.log('process.env.GITHUB_RUN_ID',process.env.GITHUB_RUN_ID)
+
+  const fetchUrl = `${projectUrl}/server/workspaces/${selectedWorkspace}/tasks/${taskId}/.json?auth=${idToken}`
+  debugger;
+  fetch(fetchUrl).then(response => response.json()).then(async task => {
+    debugger;
+    const queque = []
+
+    debugger;
+    process.env.runSequence =task['runSequence']
+      const workflows = task['workflows']
+      const taskName = task['taskName']
+      debugger;
+      for (let wf in workflows) {
+        const workflow = workflows[wf]
+        queque.push({ taskId, taskName, ...workflow, workflowKey: parseInt(wf) })
+      }
+     const workflowRunnerEmitter = workflowRunner({ workflows: queque })
+     workflowRunnerEmitter.emit(workflowEvents.START_WORKFLOW_RUNNER, {})
+
+    if(process.env.runSequence==="parallel" && runNext==='true'){
+      debugger;
+       await triggerNextTask(nextTask)
+       debugger;
+    }
+
+  }).catch(error => {
+    console.log('error', error)
+    
+  })
+
+
+
+
+
+
+
 
 global.endTime=new Date()
 setInterval(()=>{
@@ -49,39 +72,7 @@ setInterval(()=>{
 },1000)
 
 
-const { taskRunner, taskEvents } = require('./taskRunner')
-//1.get workflows info from firebase
 
-const fetchUrl = `${projectUrl}/server/workspaces/${selectedWorkspace}/tasks/.json?auth=${idToken}`
-
-//console.log('fetchUrl',fetchUrl)
-debugger;
-fetch(fetchUrl).then(response => response.json()).then(data => {
-  const queque = []
-  debugger;
-  const tasks = Object.entries(data)
-
-  tasks.forEach(task => {
-    const taskId = task[0]
-
-    
-    const workflows = task[1]['workflows']
-    const taskName = task[1]['taskName']
-    for (let wf in workflows) {
-      const workflow = workflows[wf]
-
-      queque.push({ taskId, taskName, ...workflow, workflowKey: parseInt(wf) })
-
-    }
-
-    
-  })
-  const taskRunnerEmitter = taskRunner({ tasks: queque })
-  taskRunnerEmitter.emit(taskEvents.START_TASK_RUNNER, {})
-}).catch(error => {
-  console.log('error', error)
-  
-})
 
 
 
