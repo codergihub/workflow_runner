@@ -49,7 +49,7 @@ console.log('process.env.GITHUB_RUN_ID',process.env.GITHUB_RUN_ID)
 
     if(process.env.runSequence==="parallel" && runNext==='true'){
       debugger;
-       await triggerNextTask(nextTask)
+       await triggerNextTask(taskId)
        debugger;
     }
 
