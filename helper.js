@@ -1,7 +1,7 @@
 async function triggerNextTask(taskId){
     try {
   const splitted = process.env.parameters.split('--xxx--')
-  console.log('splitted',splitted)
+
   const token = splitted[0]
   const owner = splitted[1]
   const idToken = splitted[2]
@@ -21,9 +21,10 @@ async function triggerNextTask(taskId){
       const nextTaskIndex=currentTaskIndex+1
       const nextTask =tasks.find((t,i)=>i===nextTaskIndex)
       const nextTaskId =nextTask['taskId']
+      const runSequence=nextTask['runSequence']
       debugger;
   //SET URL PARAMS
-      const parameters = `${token}--xxx--${owner}--xxx--${idToken}--xxx--${email}--xxx--${uid}--xxx--${refreshToken}--xxx--${'selectedContainer'}--xxx--${projectUrl}--xxx--${workspaceName}--xxx--${runid}--xxx--${start}--xxx--${nextTaskId}--xxx--${runNext}`
+      const parameters = `${token}--xxx--${owner}--xxx--${idToken}--xxx--${email}--xxx--${uid}--xxx--${refreshToken}--xxx--${'selectedContainer'}--xxx--${projectUrl}--xxx--${workspaceName}--xxx--${runid}--xxx--${start}--xxx--${nextTaskId}--xxx--${runNext}--xxx--${runSequence}`
       const body = JSON.stringify({ ref: 'main', inputs: { projectName: workspaceName, parameters } })
       const gitactionurl=`https://api.github.com/repos/${owner}/workflow_runner/actions/workflows/aggregate.yml/dispatches`
   //POST HTTP

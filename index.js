@@ -7,7 +7,7 @@ const {triggerNextTask}=require('./helper')
 
 
 const splitted = process.env.parameters.split('--xxx--')
-console.log('splitted',splitted)
+
 process.env.gh_token = splitted[0]
 process.env.owner = splitted[1]
 process.env.idToken = splitted[2]
@@ -20,37 +20,35 @@ process.env.selectedWorkspace = splitted[8]
 process.env.runid = splitted[9]
 process.env.start = splitted[10]
 process.env.runNext=splitted[12]
-
+process.env.runSequence =splitted[13]
 
 const idToken = splitted[2]
 const projectUrl = splitted[7]
-const selectedWorkspace = splitted[8]
+const workspaceName = splitted[8]
 const taskId=splitted[11]
-
+console.log('taskId......',taskId)
 console.log('process.env.GITHUB_RUN_ID',process.env.GITHUB_RUN_ID)
 
-  const fetchUrl = `${projectUrl}/server/workspaces/${selectedWorkspace}/tasks/${taskId}/.json?auth=${idToken}`
-  debugger;
-  fetch(fetchUrl).then(response => response.json()).then(async task => {
-    debugger;
+  const fetchUrl = `${projectUrl}/workflows/workspaces/${workspaceName}/tasks/${taskId}/.json?auth=${idToken}`
+  
+  fetch(fetchUrl).then(response => response.json()).then(async workflows => {
+    
     const queque = []
-
-    debugger;
-    process.env.runSequence =task['runSequence']
-      const workflows = task['workflows']
-      const taskName = task['taskName']
-      debugger;
+      
       for (let wf in workflows) {
         const workflow = workflows[wf]
-        queque.push({ taskId, taskName, ...workflow, workflowKey: parseInt(wf) })
+        queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
+        
       }
+      
      const workflowRunnerEmitter = workflowRunner({ workflows: queque })
+     
      workflowRunnerEmitter.emit(workflowEvents.START_WORKFLOW_RUNNER, {})
-
-    if(process.env.runSequence==="parallel" && runNext==='true'){
-      debugger;
-       await triggerNextTask(taskId)
-       debugger;
+debugger;
+    if(process.env.runSequence==="parallel" && process.env.runNext==='true'){
+      //-------------------------------------------------
+    //   await triggerNextTask(taskId)
+       
     }
 
   }).catch(error => {

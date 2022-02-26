@@ -7,33 +7,33 @@ const pather = require('path')
 
 var exec = require('child_process').exec
 async function runRepo({ workflow, workflowEmitter }) {
-    debugger;
-    const { screenName, selectedRepo,
-        taskName ,
+    
+    const { screenName,
+        repoName,
         taskId,
         selectedBranch,
-        workflowKey} = workflow
-
-    debugger;
-    const gh_token = process.env.gh_token
-    
-    //1.GET CONTENTS FROM WORKFLOW REPO
-    const tree = await getWorkflowSourceCodeTree({ owner: screenName, repo: selectedRepo, token: gh_token ,selectedBranch})
+        workflowKey } = workflow
 debugger;
-    const contents = await getContentsFromWorkflowRepo({ owner: screenName, repo: selectedRepo, tree, token: gh_token })
+    
+    const gh_token = process.env.gh_token
+
+    //1.GET CONTENTS FROM WORKFLOW REPO
+    const tree = await getWorkflowSourceCodeTree({ owner: screenName, repoName, token: gh_token, selectedBranch })
+    
+    const contents = await getContentsFromWorkflowRepo({ owner: screenName, repoName, tree, token: gh_token })
     //2.SAVE CONTENT TO ROOT FOLDER
 
     for (let c of contents) {
         const { content, path } = c
         const utfContent = Buffer.from(content, 'base64').toString('utf-8')
 
-        const filepath = `${process.cwd()}/${selectedRepo}/${path}`
+        const filepath = `${process.cwd()}/${repoName}/${path}`
         const dirpath = pather.dirname(filepath)
         makeDir.sync(dirpath)
         fs.writeFileSync(filepath, utfContent)
 
     }
-debugger;
+    
 
     //3.INSTALL DEPENDENECIES
 
@@ -41,9 +41,9 @@ debugger;
     let dependencies = ''
 
 
-    const { dependencies: originalDependencies } = require(`${process.cwd()}/${selectedRepo}/package.json`)
+    const { dependencies: originalDependencies } = require(`${process.cwd()}/${repoName}/package.json`)
 
-debugger;
+    
 
 
     for (let obj in originalDependencies) {
@@ -53,12 +53,12 @@ debugger;
 
     }
     dependencies = dependencyArray.join(' ')
-debugger;
+    
     console.log('dependencies....', dependencies)
     //npm i ${dependencies}
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
     var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, function (err, stdout, stderr) {
-        debugger;
+        
         console.log('stderr', stderr)
         if (err) {
 
@@ -71,8 +71,8 @@ debugger;
             console.log('dependencies installed')
 
 
-            const main = `${process.cwd()}/${selectedRepo}/main.js`
-            
+            const main = `${process.cwd()}/${repoName}/main.js`
+
             const worker = new Worker(main, { workerData: {} });
 
             worker.once("message", result => {
@@ -81,14 +81,15 @@ debugger;
 
             worker.on("error", error => {
                 console.log(error);
-                workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskName,
-                    workflowKey })
+                workflowEmitter.emit("WORKFLOW_RUN_FAILED", {
+                    workflowKey
+                })
             });
 
             worker.on("exit", exitCode => {
                 console.log(`It exited with code ${exitCode}`);
-            debugger;
-                workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskName,taskId, workflowKey })
+                
+                workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
             })
             setInterval(() => { }, 5000)
         }
@@ -101,10 +102,10 @@ debugger;
 
 
 
-    async function getContentsFromWorkflowRepo({ owner, repo, tree, token }) {
+    async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
 
         const getContent = async function ({ path }) {
-            const fetchPath = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`
+            const fetchPath = `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`
 
             const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
             const data = await response.json()
@@ -123,23 +124,23 @@ debugger;
         return contents
     }
 
-    async function getWorkflowSourceCodeTree({ owner, repo, token,selectedBranch }) {
+    async function getWorkflowSourceCodeTree({ owner, repoName, token, selectedBranch }) {
 
         // Retrieve source code for project
         //Retrieved source code will be copied to project branch of forked agregators repo
         //---- List branches endpoint----
         /*required for the next endoint*/
-        const fetchPath = `https://api.github.com/repos/${owner}/${repo}/branches`
+        const fetchPath = `https://api.github.com/repos/${owner}/${repoName}/branches`
 
         const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
         const data = await response.json()
-        debugger;
-        const mainSha = data.find(d => d.name ===selectedBranch)
+        
+        const mainSha = data.find(d => d.name === selectedBranch)
         const { commit: { sha } } = mainSha
 
         //------Git database / Get a tree endpoint------
         /*required to retrieve list of file and folder into*/
-        const treeResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${sha}?recursive=1`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
+        const treeResponse = await fetch(`https://api.github.com/repos/${owner}/${repoName}/git/trees/${sha}?recursive=1`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
         const treeData = await treeResponse.json()
         const { tree } = treeData
 
