@@ -37,10 +37,23 @@ function fbRest() {
             })
 
         },
+        get: async function (cb) {
+        
+
+            fetch(`${this.projectUri}/${this.url}/.json?auth=${this.idToken}`, { method: 'GET' }).then(response => response.json()).then(data => {
+
+                cb && cb(null,data)
+            }).catch(error => {
+
+                cb && cb(error)
+                return this
+            })
+        },
         update: async function (data, cb) {
          
             debugger;
             fetch(`${this.projectUri}/${this.url}/.json?auth=${this.idToken}`, { method: 'PATCH', body: JSON.stringify(data) }).then(response => response.json()).then(data => {
+                debugger;
                 cb && cb(null,data)
             }).catch(error => {
                 cb && cb(error,null)
