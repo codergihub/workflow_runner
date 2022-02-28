@@ -60,15 +60,19 @@ function workflowRunner({ workflows }) {
     return promiseEmitter;
 }
 
+async function updateCompletionLog(){
+    //workspaceLog
+    //update task log
+    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/${process.env.runid}`
+    //updateWorkspaceLog
+    //   const updateIncResponse = await fetch(fetchUrl, { method: 'PUT', body: JSON.stringify({ '.sv': { 'increment': 1 } }) })
+    
+    const update = { [updateTaskLogRef]: { totalWorkflows: this.workflows.length, complete: 0, start: Date.now(), error: 0, success: 0 } }
+}
 
 
 async function runWorkflow({ workflow, self }) {
-    //update task log
-    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/${process.env.runid}`
-    global[`task${workflow.taskId}complete`] = 0
-    global[`task${workflow.taskId}error`] = 0
-    global[`task${workflow.taskId}success`] = 0
-    const update = { [updateTaskLogRef]: { totalWorkflows: this.workflows.length, complete: 0, start: Date.now(), error: 0, success: 0 } }
+
 
     const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
     const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })

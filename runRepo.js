@@ -88,8 +88,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                     worker.on("error", error => {
 
                         const update = { [updateWfLogRef]: { runState: 2, end: Date.now(), error: true } }
-                        global[`task${taskId}complete`] = ++global[`task${taskId}complete`]
-                        global[`task${taskId}error`] = ++global[`task${taskId}error`]
+                   
                         fbDatabase.ref('/').update(update, async (error, response) => {
                             if (!error) {
                                 console.log(`It exited with code ${exitCode}`);
@@ -104,8 +103,7 @@ async function runRepo({ workflow, workflowEmitter }) {
 
                     worker.on("exit", exitCode => {
                         const update = { [updateWfLogRef]: { runState: 2, end: Date.now(), error: false } }
-                        global[`task${taskId}complete`] = ++global[`task${taskId}complete`]
-                        global[`task${taskId}success`] = ++global[`task${taskId}success`]
+        
                         fbDatabase.ref('/').update(update, async (error, response) => {
                             if (!error) {
                                 console.log(`It exited with code ${exitCode}`);
@@ -140,6 +138,10 @@ async function runRepo({ workflow, workflowEmitter }) {
 
 
 }//runRepo
+
+async function updateStartLog(){
+
+}
 
 async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
 
