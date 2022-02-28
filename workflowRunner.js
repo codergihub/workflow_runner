@@ -35,7 +35,7 @@ class WorkFlowListender extends EventEmitter {
             }
 
         })
-        
+
         this.on(workflowEvents.WORKFLOW_RUN_FAILED, async function ({ taskName,
             workflowKey }) {
             const workflow = this.workflows.find(t => t.workflowKey > workflowKey)
@@ -104,6 +104,7 @@ async function postWorkflowRun() {
     const { hours, mins, seconds } = timespan(date2, date1)
     const duration = `${hours}:${mins}:${seconds}`
     const start = parseInt(process.env.start)
+    //update taskLog
     const update = { [`runs/${process.env.selectedWorkspace}/${process.env.runid}`]: { runState: 2, duration, end: global.endTime.getTime(), start, html_url } }
     fbDatabase.ref('/').update(update, async (error, data) => {
 
