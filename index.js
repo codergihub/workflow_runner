@@ -2,10 +2,6 @@
 const fetch = require('node-fetch')
 const { fbRest } = require('./firebase-rest')
 
-
-
-
-
 const splitted = process.env.parameters.split('--xxx--')
 
 process.env.gh_token = splitted[0]

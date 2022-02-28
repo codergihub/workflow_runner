@@ -45,8 +45,6 @@ async function runRepo({ workflow, workflowEmitter }) {
     const { dependencies: originalDependencies } = require(`${process.cwd()}/${repoName}/package.json`)
 
 
-
-
     for (let obj in originalDependencies) {
 
         const value = originalDependencies[obj].replace('^', '')
@@ -71,8 +69,6 @@ async function runRepo({ workflow, workflowEmitter }) {
             //4.RUN WORKFLOW ENTRY FILE
             console.log('dependencies installed')
 
-            if (!error) {
-
                 const main = `${process.cwd()}/${repoName}/main.js`
 
                 const worker = new Worker(main, { workerData: {} });
@@ -83,8 +79,8 @@ async function runRepo({ workflow, workflowEmitter }) {
                 worker.on("error", error => {
 
                     const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.runid}/failed`
-                    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks${process.env.taskId}/logs/${process.env.runid}/failed`
-                    const updateWfLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/${process.env.runid}`
+                    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/logs/${process.env.runid}/failed`
+                    const updateWfLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}`
 
                     const update = {
                         [updateWfLogRef]: { end: Date.now(), result: 'success' },
@@ -106,8 +102,8 @@ async function runRepo({ workflow, workflowEmitter }) {
 
                 worker.on("exit", exitCode => {
                     const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.runid}/success`
-                    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks${process.env.taskId}/logs/${process.env.runid}/success`
-                    const updateWfLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/${process.env.runid}`
+                    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/logs/${process.env.runid}/success`
+                    const updateWfLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}`
 
                     const update = {
                         [updateWfLogRef]: { end: Date.now(), result: 'failed' },
@@ -129,14 +125,7 @@ async function runRepo({ workflow, workflowEmitter }) {
 
                 })
 
-            } else {
-                console.log('firebase error', error)
-                //error happened
-            }
-
-
-
-
+          
 
 
             setInterval(() => { }, 5000)
@@ -146,13 +135,9 @@ async function runRepo({ workflow, workflowEmitter }) {
 
 
 
-
-
 }//runRepo
 
-async function updateStartLog() {
 
-}
 
 async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
 
