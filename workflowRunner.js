@@ -21,14 +21,18 @@ class WorkFlowListender extends EventEmitter {
         this.workflows = workflows
         this.on(workflowEvents.START_WORKFLOW_RUNNER, async function () {
             const workflow = this.workflows[0]
-            await runWorkflow({ workflow, self: this })
+            await updateTaskLog()
+            await setEnvVars({ workflow })
+            await runRepo({ workflow, workflowEmitter: this })
         })
 
         this.on(workflowEvents.WORKFLOW_RUN_SUCCESSFUL, async function ({ taskId,
             workflowKey }) {
             const workflow = this.workflows.find(t => t.workflowKey > workflowKey)
             if (workflow) {
-                await runWorkflow({ workflow, self: this })
+
+                await setEnvVars({ workflow })
+                await runRepo({ workflow, workflowEmitter: this })
             } else {
                 //run postWorkflow
                 await postWorkflowRun()
@@ -40,7 +44,8 @@ class WorkFlowListender extends EventEmitter {
             workflowKey }) {
             const workflow = this.workflows.find(t => t.workflowKey > workflowKey)
             if (workflow) {
-                await runWorkflow({ workflow, self: this })
+                await setEnvVars({ workflow })
+                await runRepo({ workflow, workflowEmitter: this })
             } else {
                 //run postWorkflow
                 await postWorkflowRun()
@@ -60,19 +65,15 @@ function workflowRunner({ workflows }) {
     return promiseEmitter;
 }
 
-async function updateCompletionLog(){
-    //workspaceLog
-    //update task log
-    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/${process.env.runid}`
-    //updateWorkspaceLog
-    //   const updateIncResponse = await fetch(fetchUrl, { method: 'PUT', body: JSON.stringify({ '.sv': { 'increment': 1 } }) })
-    
-    const update = { [updateTaskLogRef]: { totalWorkflows: this.workflows.length, complete: 0, start: Date.now(), error: 0, success: 0 } }
+async function updateTaskLog() {
+    //update task log start
+    const updateTaskUrl = `taskLogs/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/${process.env.runid}`
+    const updateBody = { total: this.workflows.length, start: Date.now(), failed: 0, success: 0 }
+    await fetch(`${projectUrl}/${updateTaskUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: updateBody })
 }
 
 
-async function runWorkflow({ workflow, self }) {
-
+async function setEnvVars({ workflow }) {
 
     const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
     const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })
@@ -80,15 +81,13 @@ async function runWorkflow({ workflow, self }) {
         const { data } = response
 
         for (let d in data) {
-
             let envName = data[d]['varName']
             let envValue = data[d]['value']
             process.env[envName] = envValue
-
         }
 
     }
-    await runRepo({ workflow, workflowEmitter: self })
+
 }
 
 

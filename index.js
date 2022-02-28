@@ -30,7 +30,7 @@ const taskId = splitted[11]
 console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
 
-if (process.env.runNext === 'true') {
+if (process.env.first === 'true') {
   let totalTasks = 0
   let totalWorkflows = 0
   let start = Date.now()
@@ -47,7 +47,7 @@ if (process.env.runNext === 'true') {
           const response = await fetch(`${projectUrl}/workflows/workspaces/${workspaceName}/tasks/${taskId}/.json?auth=${idToken}`, { method: 'GET' })
 
           const data = await response.json()
-          
+
           return data
         })())
 
@@ -56,11 +56,10 @@ if (process.env.runNext === 'true') {
       const workflows = await Promise.all(wfPromises)
 
       workflows.forEach(wf => {
-
         const total = Object.keys(wf).length
         totalWorkflows = totalWorkflows + total
       })
-
+      
       const response = await fetch(`${projectUrl}/workspaceLogs/${workspaceName}/logs/${runid}/.json?auth=${idToken}`, { method: 'POST', body: JSON.stringify({ totalTasks, totalWorkflows, success: 0, error: 0, start }) })
       const ok = response.ok
       if (ok) {
@@ -85,17 +84,11 @@ if (process.env.runNext === 'true') {
 
 
 
-
-
-
-
-
 global.endTime = new Date()
 setInterval(() => {
   global.endTime.setSeconds(global.endTime.getSeconds() + 1)
 
 }, 1000)
-
 
 
 
