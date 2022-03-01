@@ -30,7 +30,8 @@ console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
 
 if (process.env.first === 'true') {
-  
+  process.env.first='false'
+ debugger;
   let totalTasks = 0
   let totalWorkflows = 0
   let start = Date.now()
@@ -63,10 +64,12 @@ if (process.env.first === 'true') {
         totalWorkflows = totalWorkflows + total
       })
       //save total tasks and workflow count to firebase
-   
-      const response = await fetch(`${projectUrl}/workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/.json?auth=${idToken}`, { method: 'PUT', body: JSON.stringify({ totalTasks, totalWorkflows, success: 0, error: 0, start }) })
+       const updateWsTotalTasks ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalTasks`]:totalTasks}
+       const updateWsTotalWs ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalWorkflows`]:totalWorkflows}
+       const updateWsStart ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/start`]:start}
+      const response = await fetch(`${projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify({...updateWsTotalTasks,...updateWsTotalWs,...updateWsStart }) })
       const ok = response.ok
-      
+      debugger;//---------------------------------------------
       if (ok) {
         init({ taskId, idToken, workspaceName, projectUrl })
       } else {

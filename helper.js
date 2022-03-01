@@ -28,7 +28,7 @@ async function triggerNextTask(taskId) {
         
         const nextTaskId = nextTask['taskId']
         const runSequence = nextTask['runSequence']
-        const first = 'true'
+        const first = 'false'
         const wfrunid =process.env.wfrunid
         debugger;
 

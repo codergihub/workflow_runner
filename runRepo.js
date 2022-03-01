@@ -119,12 +119,14 @@ async function runRepo({ workflow, workflowEmitter }) {
                     [updateWsLogRef]: { '.sv': { 'increment': 1 } },
                     [updateTaskLogRef]: { '.sv': { 'increment': 1 } }
                 }
-
+debugger;
                 fbDatabase.ref('/').update(update, async (error, response) => {
                     if (!error) {
+                        debugger;
                         console.log(`It exited with code ${exitCode}`);
                         workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
                     } else {
+                        debugger;
                         console.log('firebase error', error)
                     }
 
