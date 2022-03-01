@@ -7,7 +7,6 @@ const fetch = require('node-fetch')
 const { triggerNextTask } = require('./helper')
 
 
-
 const workflowEvents = {
     START_WORKFLOW_RUNNER: 'START_WORKFLOW_RUNNER',
     WORKFLOW_RUN_SUCCESSFUL: 'WORKFLOW_RUN_SUCCESSFUL',
@@ -22,6 +21,7 @@ class WorkFlowListender extends EventEmitter {
         this.on(workflowEvents.START_WORKFLOW_RUNNER, async function () {
             const workflow = this.workflows[0]
             await updateTaskLog({ workflow, workflows: this.workflows })
+            debugger;
             await setEnvVars({ workflow })
             await runRepo({ workflow, workflowEmitter: this })
         })
@@ -58,7 +58,7 @@ class WorkFlowListender extends EventEmitter {
 }
 function workflowRunner({ workflows }) {
     const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
-    debugger
+
     const promiseEmitter = new WorkFlowListender({ workflows, fbDatabase });
     promiseEmitter.fbDatabase
     promiseEmitter.setMaxListeners(50);
@@ -67,12 +67,11 @@ function workflowRunner({ workflows }) {
 
 async function updateTaskLog({ workflow, workflows }) {
     //update task log start
-    const updateTaskUrl = `taskLogs/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/${process.env.runid}`
+    const updateTaskUrl = `taskLogs/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/logs/${process.env.runid}`
     const updateBody = { total: workflows.length, start: Date.now(), failed: 0, success: 0 }
-    await fetch(`${process.env.projectUrl}/${updateTaskUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: updateBody })
+    const response = await fetch(`${process.env.projectUrl}/${updateTaskUrl}/.json?auth=${process.env.idToken}`, { method: 'put', body: JSON.stringify(updateBody) })
+    debugger;
 }
-
-
 
 async function setEnvVars({ workflow }) {
 
@@ -92,7 +91,6 @@ async function setEnvVars({ workflow }) {
 }
 
 
-
 async function postTaskRun({ result }) {
     let html_url = ''
     if (process.env.GITHUB_RUN_ID) {
@@ -108,19 +106,21 @@ async function postTaskRun({ result }) {
     const { hours, mins, seconds } = timespan(date2, date1)
     const duration = `${hours}:${mins}:${seconds}`
 
-    const updateWsLogRef = { [`workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.runid}/${result}`]: { '.sv': { 'increment': 1 } } }
-    const updateTaskLogResult = { [`taskLogs/${process.env.selectedWorkspace}/tasks${process.env.taskId}/logs/${process.env.runid}/${result}`]: { '.sv': { 'increment': 1 } } }
-    const updateTaskLogEnd = { [`taskLogs/${process.env.selectedWorkspace}/tasks${process.env.taskId}/logs/${process.env.runid}/end`]: Date.now() }
 
+    const updateWsLastTaskLogRef = { [`workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/last`]: Date.now() }
+    const updateTaskLogEnd = { [`taskLogs/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/logs/${process.env.runid}/end`]: Date.now() }
+    
+    debugger;
 
-const updateBody = { ...updateWsLogRef, ...updateTaskLogResult, ...updateTaskLogEnd }
-const response = await fetch(`${process.env.projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify(updateBody) })
+    const updateBody = {...updateTaskLogEnd,...updateWsLastTaskLogRef }
+    const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify(updateBody) })
+    const ok = response.ok
+    debugger;
 
-
-if (process.env.runSequence === 'sequential' && process.env.runNext === 'true') {
-
-    //    await triggerNextTask(taskId)
-}
+    if (process.env.runSequence === 'sequential' && process.env.runNext === 'true') {
+        debugger;
+        await triggerNextTask(process.env.taskId)
+    }
 }
 
 module.exports = { workflowRunner, workflowEvents }

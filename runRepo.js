@@ -56,7 +56,7 @@ async function runRepo({ workflow, workflowEmitter }) {
     console.log('dependencies....', dependencies)
     //npm i ${dependencies}
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
-    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, function (err, stdout, stderr) {
+    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, async function (err, stdout, stderr) {
 
         console.log('stderr', stderr)
         if (err) {
@@ -68,64 +68,69 @@ async function runRepo({ workflow, workflowEmitter }) {
             //   const updateIncResponse = await fetch(fetchUrl, { method: 'PUT', body: JSON.stringify({ '.sv': { 'increment': 1 } }) })
             //4.RUN WORKFLOW ENTRY FILE
             console.log('dependencies installed')
+            const updateWfLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}`
+            const updateBody = { [updateWfLogRef]: { start: Date.now() } }
+            const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify(updateBody) })
+            const ok = response.ok
+            debugger;
+            //  if(ok)
 
-                const main = `${process.cwd()}/${repoName}/main.js`
+            //run main nodejs
+            const main = `${process.cwd()}/${repoName}/main.js`
 
-                const worker = new Worker(main, { workerData: {} });
-                worker.once("message", result => {
-                    console.log(`${number}th Fibonacci No: ${result}`);
-                });
+            const worker = new Worker(main, { workerData: {} });
+            worker.once("message", result => {
+                console.log(`${number}th Fibonacci No: ${result}`);
+            });
 
-                worker.on("error", error => {
+            worker.on("error", error => {
 
-                    const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.runid}/failed`
-                    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/logs/${process.env.runid}/failed`
-                    const updateWfLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}`
+                const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
+                const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/logs/${process.env.runid}/failed`
+                const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}/result`
+                const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}/end`
+                const update = {
+                    [updateWfResultLogRef]: 'failed',
+                    [updateWfEndLogRef]: Date.now(),
+                    [updateWsLogRef]: { '.sv': { 'increment': 1 } },
+                    [updateTaskLogRef]: { '.sv': { 'increment': 1 } }
+                }
 
-                    const update = {
-                        [updateWfLogRef]: { end: Date.now(), result: 'success' },
-                        [updateWsLogRef]: { '.sv': { 'increment': 1 } },
-                        [updateTaskLogRef]: { '.sv': { 'increment': 1 } }
+                fbDatabase.ref('/').update(update, async (error, response) => {
+                    if (!error) {
+                        console.log(`It exited with code ${exitCode}`);
+                        workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
+                    } else {
+                        console.log('firebase error', error)
                     }
-
-                    fbDatabase.ref('/').update(update, async (error, response) => {
-                        if (!error) {
-                            console.log(`It exited with code ${exitCode}`);
-                            workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
-                        } else {
-                            console.log('firebase error', error)
-                        }
-
-                    })
-
-                });
-
-                worker.on("exit", exitCode => {
-                    const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.runid}/success`
-                    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/logs/${process.env.runid}/success`
-                    const updateWfLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}`
-
-                    const update = {
-                        [updateWfLogRef]: { end: Date.now(), result: 'failed' },
-                        [updateWsLogRef]: { '.sv': { 'increment': 1 } },
-                        [updateTaskLogRef]: { '.sv': { 'increment': 1 } }
-                    }
-
-                    fbDatabase.ref('/').update(update, async (error, response) => {
-                        if (!error) {
-                            console.log(`It exited with code ${exitCode}`);
-                            workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
-                        } else {
-                            console.log('firebase error', error)
-                        }
-
-                    })
-
-
 
                 })
 
-          
+            });
+
+            worker.on("exit", exitCode => {
+                const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/success`
+                const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/logs/${process.env.runid}/success`
+                const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}/result`
+                const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/tasks/${taskId}/workflows/${workflowKey}/logs/${process.env.runid}/end`
+                const update = {
+                    [updateWfResultLogRef]: 'success',
+                    [updateWfEndLogRef]: Date.now(),
+                    [updateWsLogRef]: { '.sv': { 'increment': 1 } },
+                    [updateTaskLogRef]: { '.sv': { 'increment': 1 } }
+                }
+
+                fbDatabase.ref('/').update(update, async (error, response) => {
+                    if (!error) {
+                        console.log(`It exited with code ${exitCode}`);
+                        workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+                    } else {
+                        console.log('firebase error', error)
+                    }
+
+                })
+
+            })
 
 
             setInterval(() => { }, 5000)

@@ -23,18 +23,23 @@ async function triggerNextTask(taskId) {
         const currentTaskIndex = tasks.findIndex(t => t.taskId === taskId)
         const nextTaskIndex = currentTaskIndex + 1
         const nextTask = tasks.find((t, i) => i === nextTaskIndex)
+        if(nextTask){
+
+        
         const nextTaskId = nextTask['taskId']
         const runSequence = nextTask['runSequence']
+        const first = 'true'
+        const wfrunid =process.env.wfrunid
         debugger;
 
-        const parameters = `${token}--xxx--${owner}--xxx--${idToken}--xxx--${email}--xxx--${uid}--xxx--${refreshToken}--xxx--${'selectedContainer'}--xxx--${projectUrl}--xxx--${workspaceName}--xxx--${runid}--xxx--${start}--xxx--${nextTaskId}--xxx--${runNext}--xxx--${runSequence}`
-        const body = JSON.stringify({ ref: 'main', inputs: { projectName: workspaceName, parameters } })
+        const parameters = `${token}--xxx--${owner}--xxx--${idToken}--xxx--${email}--xxx--${uid}--xxx--${refreshToken}--xxx--${'selectedContainer'}--xxx--${process.env.projectUrl}--xxx--${workspaceName}--xxx--${runid}--xxx--${start}--xxx--${nextTaskId}--xxx--${runNext}--xxx--${runSequence}--xxx--${first}--xxx--${wfrunid}`
         debugger;
-        if(process.env.LOCAL==='true'){
-            debugger;
+        const body = JSON.stringify({ ref: 'main', inputs: { projectName: workspaceName, parameters } })
+        
+        if (process.env.LOCAL === 'true') {
+            
             await fetch('http://localhost:3001', { body, method: 'post' })
-        } else
-        {
+        } else {
 
             const gitactionurl = `https://api.github.com/repos/${owner}/workflow_runner/actions/workflows/aggregate.yml/dispatches`
             //POST HTTP
@@ -47,14 +52,16 @@ async function triggerNextTask(taskId) {
                 body
             })
         }
-  
-  
+
+    } else{
+        console.log('no more tasks to run')
+    }
 
         //UPDATE FIREBASE
 
     } catch (error) {
         console.log('error', error)
-        debugger;
+        
     }
 }
 
@@ -64,7 +71,7 @@ async function fetchTasks(url) {
     const response = await fetch(url)
     const tasks = await response.json()
 
-    debugger;
+    
     return Object.entries(tasks).map(m => {
         const taskId = m[0]
         const taskProps = m[1]

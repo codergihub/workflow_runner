@@ -18,28 +18,35 @@ process.env.start = splitted[10]
 process.env.runNext = splitted[12]
 process.env.runSequence = splitted[13]
 process.env.taskId = splitted[11]
+process.env.first = splitted[12]
+process.env.wfrunid=splitted[15]
 const idToken = splitted[2]
 const projectUrl = splitted[7]
 const workspaceName = splitted[8]
 const runid = splitted[9]
 const taskId = splitted[11]
+debugger;
 console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
 
 if (process.env.first === 'true') {
+  
   let totalTasks = 0
   let totalWorkflows = 0
   let start = Date.now()
   //update workspace run
   const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
 
-  const taskstRef = `server/workspaces/${workspaceName}/tasks`
-  fbDatabase.ref(taskstRef).get(async (error, obj) => {
+  const tasksRef = `server/workspaces/${workspaceName}/tasks`
+  //fetch workspace tasks
+  fbDatabase.ref(tasksRef).get(async (error, obj) => {
     if (!error) {
       const wfPromises = []
+      //count tasks
       totalTasks = Object.keys(obj).length
       for (let taskId in obj) {
         wfPromises.push((async () => {
+          //fetch workflows
           const response = await fetch(`${projectUrl}/workflows/workspaces/${workspaceName}/tasks/${taskId}/.json?auth=${idToken}`, { method: 'GET' })
 
           const data = await response.json()
@@ -50,14 +57,16 @@ if (process.env.first === 'true') {
       }
 
       const workflows = await Promise.all(wfPromises)
-
+      //count workflows
       workflows.forEach(wf => {
         const total = Object.keys(wf).length
         totalWorkflows = totalWorkflows + total
       })
-      
-      const response = await fetch(`${projectUrl}/workspaceLogs/${workspaceName}/logs/${runid}/.json?auth=${idToken}`, { method: 'POST', body: JSON.stringify({ totalTasks, totalWorkflows, success: 0, error: 0, start }) })
+      //save total tasks and workflow count to firebase
+   
+      const response = await fetch(`${projectUrl}/workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/.json?auth=${idToken}`, { method: 'PUT', body: JSON.stringify({ totalTasks, totalWorkflows, success: 0, error: 0, start }) })
       const ok = response.ok
+      
       if (ok) {
         init({ taskId, idToken, workspaceName, projectUrl })
       } else {
@@ -73,6 +82,7 @@ if (process.env.first === 'true') {
 
 
 } else {
+  
   init({ taskId, idToken, projectUrl, workspaceName })
 }
 
