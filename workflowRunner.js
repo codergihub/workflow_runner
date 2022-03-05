@@ -66,10 +66,20 @@ function workflowRunner({ workflows }) {
 }
 
 async function updateTaskLog({ workflow, workflows }) {
+    const currentDate =Date.now()
     //update task log start
-    const updateTaskUrl = `taskLogs/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/logs/${process.env.runid}`
-    const updateBody = { total: workflows.length, start: Date.now(), failed: 0, success: 0 }
-    const response = await fetch(`${process.env.projectUrl}/${updateTaskUrl}/.json?auth=${process.env.idToken}`, { method: 'put', body: JSON.stringify(updateBody) })
+    const updateTaskTotal = {[`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/total`]:workflows.length}
+    const updateTaskStart = {[`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/start`]:currentDate}
+    const updateTaskFailed = {[`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/failed`]:0}
+    const updateTaskSuccess = {[`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/success`]:0}
+  //UPDATE task lastLog
+  const updateTaskLastLogTotal = {[`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/total`]:workflows.length}
+  const updateTaskLastLogStart = {[`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/start`]:currentDate}
+  const updateTaskLastLogFailed = {[`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/failed`]:0}
+  const updateTaskLastLogSuccess = {[`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/success`]:0}
+
+    const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify({
+        ...updateTaskTotal,...updateTaskStart,...updateTaskFailed,...updateTaskSuccess,...updateTaskLastLogTotal,...updateTaskLastLogStart,...updateTaskLastLogFailed,...updateTaskLastLogSuccess}) })
     debugger;
 }
 
@@ -106,13 +116,18 @@ async function postTaskRun({ result }) {
     const { hours, mins, seconds } = timespan(date2, date1)
     const duration = `${hours}:${mins}:${seconds}`
 
+const currentDate =Date.now()
+    const updateWsLastTaskLogRef = { [`workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/last`]: currentDate }
+    const updateTaskLogEnd = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/end`]: currentDate }
 
-    const updateWsLastTaskLogRef = { [`workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/last`]: Date.now() }
-    const updateTaskLogEnd = { [`taskLogs/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/logs/${process.env.runid}/end`]: Date.now() }
-    
+    //update workspace lastLog
+    const updateWsLastLogTotalTasks ={[`workspaces/${process.env.selectedWorkspace}/lastLog/last`]:currentDate}
+    //update task lastLog
+    const updateTaskLastLogEnd = { [`workspaces/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/lastLog/end`]: currentDate }
     debugger;
 
-    const updateBody = {...updateTaskLogEnd,...updateWsLastTaskLogRef }
+    const updateBody = {...updateTaskLogEnd,...updateWsLastTaskLogRef,...updateWsLastLogTotalTasks,...updateTaskLastLogEnd }
+
     const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify(updateBody) })
     const ok = response.ok
     debugger;

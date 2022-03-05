@@ -67,7 +67,14 @@ if (process.env.first === 'true') {
        const updateWsTotalTasks ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalTasks`]:totalTasks}
        const updateWsTotalWs ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalWorkflows`]:totalWorkflows}
        const updateWsStart ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/start`]:start}
-      const response = await fetch(`${projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify({...updateWsTotalTasks,...updateWsTotalWs,...updateWsStart }) })
+       //update lastRun workspace
+       const updateWsLastLogTotalTasks ={[`workspaces/${workspaceName}/lastLog/totalTasks`]:totalTasks}
+       const updateWsLastLogTotalWf ={[`workspaces/${workspaceName}/lastLog/totalWorkflows`]:totalWorkflows}
+       const updateWsLastLogStart ={[`workspaces/${workspaceName}/lastLog/start`]:start}
+       const updateWsLastLogSuccess ={[`workspaces/${workspaceName}/lastLog/success`]:0}
+       const updateWsLastLogFailed ={[`workspaces/${workspaceName}/lastLog/failed`]:0}
+
+      const response = await fetch(`${projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify({...updateWsTotalTasks,...updateWsTotalWs,...updateWsStart,...updateWsLastLogTotalTasks,...updateWsLastLogTotalWf,...updateWsLastLogStart,...updateWsLastLogSuccess,...updateWsLastLogFailed }) })
       const ok = response.ok
       debugger;//---------------------------------------------
       if (ok) {
