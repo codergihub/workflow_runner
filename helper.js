@@ -16,7 +16,7 @@ async function triggerNextTask(taskId) {
         const runid = Date.now()
         const start = runid
         const runNext = "true"
-        process.env.first='false'
+    
         //FIND NEXT TASK
         const fetchUrl = `${projectUrl}/server/workspaces/${workspaceName}/tasks/.json?auth=${idToken}`
         const tasks = await fetchTasks(fetchUrl)

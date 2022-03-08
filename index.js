@@ -18,7 +18,7 @@ process.env.start = splitted[10]
 process.env.runNext = splitted[12]
 process.env.runSequence = splitted[13]
 process.env.taskId = splitted[11]
-process.env.first = splitted[12]
+process.env.first = splitted[14]
 process.env.wfrunid=splitted[15]
 const idToken = splitted[2]
 const projectUrl = splitted[7]
@@ -30,6 +30,7 @@ console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
 
 if (process.env.first === 'true') {
+  debugger;
   process.env.first='false'
  debugger;
   let totalTasks = 0
