@@ -36,6 +36,8 @@ class WorkFlowListender extends EventEmitter {
             } else {
                 //run postWorkflow
                 await postTaskRun({ result: 'success' })
+                console.log('workflows completed with error....')
+                process.exit(0)
             }
 
         })
@@ -49,8 +51,8 @@ class WorkFlowListender extends EventEmitter {
             } else {
                 //run postWorkflow
                 await postTaskRun({ result: 'failed' })
-                console.log('workflows complete2....')
-                process.exit(0)
+                console.log('workflows completed with error....')
+                process.exit(1)
             }
         })
 
