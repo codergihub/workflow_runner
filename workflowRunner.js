@@ -80,6 +80,7 @@ async function updateTaskLog({ workflow, workflows }) {
   const updateTaskLastLogFailed = {[`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/failed`]:0}
   const updateTaskLastLogSuccess = {[`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/success`]:0}
 
+debugger;
     const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify({
         ...updateTaskTotal,...updateTaskStart,...updateTaskFailed,...updateTaskSuccess,...updateTaskLastLogTotal,...updateTaskLastLogStart,...updateTaskLastLogFailed,...updateTaskLastLogSuccess}) })
     debugger;

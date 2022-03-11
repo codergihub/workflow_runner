@@ -19,7 +19,7 @@ process.env.runNext = splitted[12]
 process.env.runSequence = splitted[13]
 process.env.taskId = splitted[11]
 process.env.first = splitted[14]
-process.env.wfrunid=splitted[15]
+process.env.wfrunid = splitted[15]
 const idToken = splitted[2]
 const projectUrl = splitted[7]
 const workspaceName = splitted[8]
@@ -31,8 +31,8 @@ console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
 
 if (process.env.first === 'true') {
   debugger;
-  process.env.first='false'
- debugger;
+  process.env.first = 'false'
+  debugger;
   let totalTasks = 0
   let totalWorkflows = 0
   let start = Date.now()
@@ -65,17 +65,17 @@ if (process.env.first === 'true') {
         totalWorkflows = totalWorkflows + total
       })
       //save total tasks and workflow count to firebase
-       const updateWsTotalTasks ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalTasks`]:totalTasks}
-       const updateWsTotalWs ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalWorkflows`]:totalWorkflows}
-       const updateWsStart ={[`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/start`]:start}
-       //update lastRun workspace
-       const updateWsLastLogTotalTasks ={[`workspaces/${workspaceName}/lastLog/totalTasks`]:totalTasks}
-       const updateWsLastLogTotalWf ={[`workspaces/${workspaceName}/lastLog/totalWorkflows`]:totalWorkflows}
-       const updateWsLastLogStart ={[`workspaces/${workspaceName}/lastLog/start`]:start}
-       const updateWsLastLogSuccess ={[`workspaces/${workspaceName}/lastLog/success`]:0}
-       const updateWsLastLogFailed ={[`workspaces/${workspaceName}/lastLog/failed`]:0}
+      const updateWsTotalTasks = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalTasks`]: totalTasks }
+      const updateWsTotalWs = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalWorkflows`]: totalWorkflows }
+      const updateWsStart = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/start`]: start }
+      //update lastRun workspace
+      const updateWsLastLogTotalTasks = { [`workspaces/${workspaceName}/lastLog/totalTasks`]: totalTasks }
+      const updateWsLastLogTotalWf = { [`workspaces/${workspaceName}/lastLog/totalWorkflows`]: totalWorkflows }
 
-      const response = await fetch(`${projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify({...updateWsTotalTasks,...updateWsTotalWs,...updateWsStart,...updateWsLastLogTotalTasks,...updateWsLastLogTotalWf,...updateWsLastLogStart,...updateWsLastLogSuccess,...updateWsLastLogFailed }) })
+      const updateWsLastLogSuccess = { [`workspaces/${workspaceName}/lastLog/success`]: 0 }
+      const updateWsLastLogFailed = { [`workspaces/${workspaceName}/lastLog/failed`]: 0 }
+ 
+      const response = await fetch(`${projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify({ ...updateWsTotalTasks, ...updateWsTotalWs, ...updateWsStart, ...updateWsLastLogTotalTasks, ...updateWsLastLogTotalWf, ...updateWsLastLogSuccess, ...updateWsLastLogFailed }) })
       const ok = response.ok
       debugger;//---------------------------------------------
       if (ok) {
@@ -93,7 +93,7 @@ if (process.env.first === 'true') {
 
 
 } else {
-  
+
   init({ taskId, idToken, projectUrl, workspaceName })
 }
 
