@@ -21,7 +21,8 @@ class WorkFlowListender extends EventEmitter {
         this.on(workflowEvents.START_WORKFLOW_RUNNER, async function () {
             const workflow = this.workflows[0]
             await updateTaskLog({ workflow, workflows: this.workflows })
-            debugger;
+            await setWsEnvVars({workflow})
+            await setTaskEnvVars({workflow})
             await setEnvVars({ workflow })
             await runRepo({ workflow, workflowEmitter: this })
         })
@@ -80,22 +81,24 @@ async function updateTaskLog({ workflow, workflows }) {
   const updateTaskLastLogFailed = {[`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/failed`]:0}
   const updateTaskLastLogSuccess = {[`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/success`]:0}
 
-debugger;
+
     const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify({
         ...updateTaskTotal,...updateTaskStart,...updateTaskFailed,...updateTaskSuccess,...updateTaskLastLogTotal,...updateTaskLastLogStart,...updateTaskLastLogFailed,...updateTaskLastLogSuccess}) })
-    debugger;
+    
 }
 
 async function setEnvVars({ workflow }) {
 
     const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
     const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })
-    if (response && response.data) {
-        const { data } = response
-
+    const data =await response.json()
+    debugger;
+    if (data) {
+     
         for (let d in data) {
-            let envName = data[d]['varName']
+            let envName = data[d]['inputName']
             let envValue = data[d]['value']
+            debugger;
             process.env[envName] = envValue
         }
 
@@ -103,6 +106,39 @@ async function setEnvVars({ workflow }) {
 
 }
 
+async function setWsEnvVars({ workflow }){
+    const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/vars`
+    const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })
+    const data =await response.json()
+    debugger;
+    if (data) {
+      
+
+        for (let d in data) {
+            let envName = data[d]['varName']
+            let envValue = data[d]['varValue']
+            process.env[envName] = envValue
+            
+        }
+
+    }
+}
+
+async function setTaskEnvVars({ workflow }){
+    const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/vars`
+    const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })
+    const data =await response.json()
+    if (data) {
+
+
+        for (let d in data) {
+            let envName = data[d]['varName']
+            let envValue = data[d]['varValue']
+            process.env[envName] = envValue
+        }
+
+    }
+}
 
 async function postTaskRun({ result }) {
     let html_url = ''
@@ -127,16 +163,16 @@ const currentDate =Date.now()
     const updateWsLastLogTotalTasks ={[`workspaces/${process.env.selectedWorkspace}/lastLog/last`]:currentDate}
     //update task lastLog
     const updateTaskLastLogEnd = { [`workspaces/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/lastLog/end`]: currentDate }
-    debugger;
+    
 
     const updateBody = {...updateTaskLogEnd,...updateWsLastTaskLogRef,...updateWsLastLogTotalTasks,...updateTaskLastLogEnd }
 
     const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify(updateBody) })
     const ok = response.ok
-    debugger;
+    
 
     if (process.env.runSequence === 'sequential' && process.env.runNext === 'true') {
-        debugger;
+        
         await triggerNextTask(process.env.taskId)
     }
 }

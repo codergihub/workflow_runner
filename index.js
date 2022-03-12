@@ -25,14 +25,14 @@ const projectUrl = splitted[7]
 const workspaceName = splitted[8]
 const runid = splitted[9]
 const taskId = splitted[11]
-debugger;
+
 console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
 
 if (process.env.first === 'true') {
-  debugger;
+  
   process.env.first = 'false'
-  debugger;
+  
   let totalTasks = 0
   let totalWorkflows = 0
   let start = Date.now()
@@ -77,7 +77,7 @@ if (process.env.first === 'true') {
  
       const response = await fetch(`${projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify({ ...updateWsTotalTasks, ...updateWsTotalWs, ...updateWsStart, ...updateWsLastLogTotalTasks, ...updateWsLastLogTotalWf, ...updateWsLastLogSuccess, ...updateWsLastLogFailed }) })
       const ok = response.ok
-      debugger;//---------------------------------------------
+      //---------------------------------------------
       if (ok) {
         init({ taskId, idToken, workspaceName, projectUrl })
       } else {
