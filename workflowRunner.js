@@ -89,7 +89,7 @@ async function updateTaskLog({ workflow, workflows }) {
 
 async function setEnvVars({ workflow }) {
 
-    const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
+    const fbWorkflowRef = `vars/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
     const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })
     const data =await response.json()
     debugger;
@@ -107,7 +107,7 @@ async function setEnvVars({ workflow }) {
 }
 
 async function setWsEnvVars({ workflow }){
-    const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/vars`
+    const fbWorkflowRef = `vars/workspaces/${process.env.selectedWorkspace}/vars`
     const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })
     const data =await response.json()
     debugger;
@@ -125,7 +125,7 @@ async function setWsEnvVars({ workflow }){
 }
 
 async function setTaskEnvVars({ workflow }){
-    const fbWorkflowRef = `server/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/vars`
+    const fbWorkflowRef = `vars/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/vars`
     const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })
     const data =await response.json()
     if (data) {
