@@ -1,6 +1,6 @@
 {
   "name": "workflow_runner",
-  "version": "1.12.3",
+  "version": "1.12.5",
   "description": "",
   "main": "index.js",
   "scripts": {

@@ -37,7 +37,7 @@ class WorkFlowListender extends EventEmitter {
             } else {
                 //run postWorkflow
                 await postTaskRun({ result: 'success' })
-                console.log('workflows completed with error....')
+                console.log('workflows completed with success....')
                 process.exit(0)
             }
 
@@ -148,7 +148,7 @@ async function postTaskRun({ result }) {
         const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${process.env.gh_token}` } })
         const data = await response.json()
         html_url = data.html_url
-        console.log('GITHUB_RUN_DATA', data)
+       // console.log('GITHUB_RUN_DATA', data)
     }
     var date1 = new Date(parseInt(process.env.start))
     var date2 = new Date(global.endTime.getTime())

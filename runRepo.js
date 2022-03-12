@@ -58,7 +58,7 @@ async function runRepo({ workflow, workflowEmitter }) {
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
     var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, async function (err, stdout, stderr) {
 
-        console.log('stderr', stderr)
+       // console.log('stderr', stderr)
         if (err) {
 
             // handle error
@@ -148,7 +148,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                 fbDatabase.ref('/').update(update, async (error, response) => {
                     if (!error) {
                         debugger;
-                        console.log(`It exited with code ${exitCode}`);
+                   
                         workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
                     } else {
                         debugger;
@@ -162,7 +162,7 @@ async function runRepo({ workflow, workflowEmitter }) {
 
             setInterval(() => { }, 5000)
         }
-        console.log(stdout);
+     //   console.log(stdout);
     });
 
 
