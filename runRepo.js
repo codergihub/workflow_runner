@@ -107,10 +107,10 @@ async function runRepo({ workflow, workflowEmitter }) {
                     [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
                     [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
                 }
-
+                console.log(`workflow run error ${error}`);
                 fbDatabase.ref('/').update(update, async (error, response) => {
                     if (!error) {
-                        console.log(`It exited with code ${exitCode}`);
+                       
                         workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
                     } else {
                         console.log('firebase error', error)
