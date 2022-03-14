@@ -7,7 +7,7 @@ const makeDir = require('make-dir');
 const pather = require('path')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
 var execSync = require('child_process').execSync
-var execSyncFile = require('child_process').execFileSync
+var execSyncFile = require('child_process').execSync
 async function runRepo({ workflow, workflowEmitter }) {
 
     const { screenName,
@@ -78,8 +78,11 @@ async function runRepo({ workflow, workflowEmitter }) {
     //  if(ok)
 
     //run main nodejs
+    debugger;
     const main = `${process.cwd()}/${repoName}/main.js`
-    const result = execSyncFile(main)
+    debugger;
+    const result = execSyncFile(` node ${main}`)
+    debugger;
     console.log('exec result', result)
     // const worker = new Worker(main, { workerData: {} });
     // worker.once("message", result => {
@@ -180,7 +183,7 @@ async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
 
         const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
         const data = await response.json()
-        debugger;
+        
         return data;
     }
 
@@ -208,7 +211,7 @@ async function getWorkflowSourceCodeTree({ owner, repoName, token, selectedBranc
 
     const mainSha = data.find(d => d.name === selectedBranch)
     const { commit: { sha } } = mainSha
-    debugger;
+    
     //------Git database / Get a tree endpoint------
     /*required to retrieve list of file and folder into*/
     const treeResponse = await fetch(`https://api.github.com/repos/${owner}/${repoName}/git/trees/${sha}?recursive=1`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
