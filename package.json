@@ -1,11 +1,12 @@
 {
   "name": "workflow_runner",
-  "version": "1.12.5",
+  "version": "1.12.7",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node  index.js",
+    "test1": "SET LOCAL=true&node col15/main.js",
     "dev": "SET LOCAL=true&node devServer.js"
   },
   "repository": {

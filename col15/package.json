@@ -1,0 +1,26 @@
+{
+	"name": "col15",
+	"version": "0.0.1",
+	"description": "This is a boilerplate of an Apify actor.",
+	"dependencies": {
+		"apify": "^2.0.7",
+		"cloudinary": "^1.28.1",
+		"dotenv": "^16.0.0",
+		"mongodb": "^4.4.0",
+		"puppeteer": "*"
+	},
+	"devDependencies": {
+		"@apify/eslint-config": "^0.1.3",
+		"eslint": "^7.0.0"
+	},
+	"scripts": {
+		"start": "node main.js",
+		"defacto":"set startUrl=https://www.defacto.com.tr/erkek-gomlek?page=1&& set JSONfileName=defacto-erkek-gomlek&& set marka=defacto&& set gender=erkek&&set category=giyim&&set subcategory=gomlek&&apify run -p",
+		"koton":"set startUrl=https://www.koton.com/tr/erkek/giyim/ust-giyim/gomlek/c/M01-C01-N01-AK101-K100059&& set JSONfileName=defacto-erkek-gomlek && set marka=defacto&& set gender=erkek&&set category=giyim&&set subcategory=gomlek&&apify run -p",
+		"lint": "./node_modules/.bin/eslint ./src --ext .js,.jsx",
+		"lint:fix": "./node_modules/.bin/eslint ./src --ext .js,.jsx --fix",
+		"test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
+	},
+	"author": "It's not you it's me",
+	"license": "ISC"
+}
