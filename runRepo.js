@@ -61,7 +61,7 @@ async function runRepo({ workflow, workflowEmitter }) {
        // if (err) {
 //
             // handle error
-            console.log('dependencies not installed', err)
+    //        console.log('dependencies not installed', err)
      //   }
       //  else {
 
