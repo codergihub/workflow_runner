@@ -160,8 +160,9 @@ async function runRepo({ workflow, workflowEmitter }) {
             // })
 
             const {main} = require(`${process.cwd()}/${repoName}/main`)
+        
             await main({workflowEmitter,workflow})
-          //  setInterval(() => { }, 5000)
+         
         }
      //   console.log(stdout);
     });

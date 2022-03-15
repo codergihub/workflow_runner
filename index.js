@@ -28,7 +28,9 @@ const taskId = splitted[11]
 
 console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
-
+setInterval(() => { 
+  console.log('running....')
+}, 5000)
 if (process.env.first === 'true') {
   
   process.env.first = 'false'
