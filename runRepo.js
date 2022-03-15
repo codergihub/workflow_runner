@@ -148,7 +148,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                     if (!error) {
                         debugger;
                    setTimeout(()=>{
-                    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+                   
                    },5000)
                         
                     } else {
@@ -165,7 +165,9 @@ async function runRepo({ workflow, workflowEmitter }) {
         }
      //   console.log(stdout);
     });
-
+cmd.on('close',()=>{
+    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+})
 
 
 }//runRepo
