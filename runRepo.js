@@ -27,7 +27,7 @@ async function runRepo({ workflow, workflowEmitter }) {
         const { content, path } = c
         const utfContent = Buffer.from(content, 'base64').toString('utf-8')
 
-        const filepath = `${process.cwd()}/${repoName}/${path}`
+        const filepath = `${process.cwd()}/${repoName}/${workflowKey}/${path}`
         const dirpath = pather.dirname(filepath)
         makeDir.sync(dirpath)
         fs.writeFileSync(filepath, utfContent)
@@ -76,7 +76,7 @@ async function runRepo({ workflow, workflowEmitter }) {
             //  if(ok)
 
             //run main nodejs
-            const main = `${process.cwd()}/${repoName}/main.js`
+            const main = `${process.cwd()}/${repoName}/${workflowKey}/main.js`
 
             const worker = new Worker(main, { workerData: {} });
             worker.once("message", result => {
