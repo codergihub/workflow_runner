@@ -109,7 +109,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                 console.log(`workflow run error ${error}`);
                 const firebaseurl = `${process.env.projectUrl}/.json?auth=${process.env.idToken}`
                 await fetch(firebaseurl, { method: 'PATCH', body: JSON.stringify(update) })
-                workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
+               
 
 
             });
@@ -141,10 +141,10 @@ async function runRepo({ workflow, workflowEmitter }) {
                 const firebaseurl = `${process.env.projectUrl}/.json?auth=${process.env.idToken}`
                 await fetch(firebaseurl, { method: 'PATCH', body: JSON.stringify(update) })
 
-              //  workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+        
                 setInterval(() => { }, 5000)
 
-                //   console.log(stdout);
+            
             });
 
 
@@ -155,6 +155,11 @@ async function runRepo({ workflow, workflowEmitter }) {
 cmd.on('exit',()=>{
     console.log('execute exited')
     workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+})
+
+cmd.on('error',(error)=>{
+    console.log('execute error',error)
+    workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
 })
 
 }
