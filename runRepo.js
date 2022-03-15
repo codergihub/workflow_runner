@@ -148,13 +148,12 @@ async function runRepo({ workflow, workflowEmitter }) {
             });
 
 
-
         }
         //runRepo
-
     
-    }
-)
+})
+
+}
 
         async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
 
@@ -212,4 +211,6 @@ async function runRepo({ workflow, workflowEmitter }) {
             })
 
         }
+
+
         module.exports = { runRepo, triggerAction }
