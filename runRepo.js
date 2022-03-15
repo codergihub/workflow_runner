@@ -41,7 +41,7 @@ async function runRepo({ workflow, workflowEmitter }) {
     let dependencies = ''
 
 
-    const { dependencies: originalDependencies } = require(`${process.cwd()}/${repoName}/package.json`)
+    const { dependencies: originalDependencies } = require(`${process.cwd()}/${repoName}/${workflowKey}/package.json`)
 
 
     for (let obj in originalDependencies) {
