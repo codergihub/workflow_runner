@@ -5,7 +5,7 @@ const fs = require('fs')
 const makeDir = require('make-dir');
 const pather = require('path')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
-var exec = require('child_process').exec
+var exec = require('child_process').execSync
 async function runRepo({ workflow, workflowEmitter }) {
 
     const { screenName,
@@ -55,15 +55,15 @@ async function runRepo({ workflow, workflowEmitter }) {
     console.log('dependencies....', dependencies)
     //npm i ${dependencies}
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
-    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, async function (err, stdout, stderr) {
+    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`)//, async function (err, stdout, stderr) {
 
         // console.log('stderr', stderr)
-        if (err) {
+      //  if (err) {
 
             // handle error
-            console.log('dependencies not installed', err)
-        }
-        else {
+        //    console.log('dependencies not installed', err)
+     //   }
+     //   else {
 
             //4.RUN WORKFLOW ENTRY FILE
             console.log('dependencies installed')
@@ -142,16 +142,16 @@ async function runRepo({ workflow, workflowEmitter }) {
                 await fetch(firebaseurl, { method: 'PATCH', body: JSON.stringify(update) })
 
         
-                setInterval(() => { }, 5000)
+              //  setInterval(() => { }, 5000)
 
             
             });
 
 
-        }
+      //  }
         //runRepo
     
-})
+//})
 cmd.on('exit',()=>{
     console.log('execute exited')
     workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
