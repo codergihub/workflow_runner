@@ -149,9 +149,12 @@ async function runRepo({ workflow, workflowEmitter }) {
 
 
 
-        }//runRepo
+        }
+        //runRepo
 
-
+    
+    }
+)
 
         async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
 
@@ -197,6 +200,7 @@ async function runRepo({ workflow, workflowEmitter }) {
 
             return tree
         }
+
         async function triggerAction({ ticket, body, gh_action_url }) {
             await fetch(gh_action_url, {
                 method: 'post',
