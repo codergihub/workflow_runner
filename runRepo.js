@@ -57,7 +57,7 @@ async function runRepo({ workflow, workflowEmitter }) {
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
     var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, async function (err, stdout, stderr) {
 
-       // console.log('stderr', stderr)
+        // console.log('stderr', stderr)
         if (err) {
 
             // handle error
@@ -83,7 +83,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                 console.log(`${number}th Fibonacci No: ${result}`);
             });
 
-            worker.on("error", error => {
+            worker.on("error", async (error) => {
                 const currentDate = Date.now()
                 const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
                 const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/failed`
@@ -107,19 +107,14 @@ async function runRepo({ workflow, workflowEmitter }) {
                     [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
                 }
                 console.log(`workflow run error ${error}`);
-                fbDatabase.ref('/').update(update, async (error, response) => {
-                    if (!error) {
-                       
-                        workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
-                    } else {
-                        console.log('firebase error', error)
-                    }
+                const firebaseurl = `${process.env.projectUrl}/.json?auth=${process.env.idToken}`
+                await fetch(firebaseurl, { method: 'PATCH', body: JSON.stringify(update) })
+                workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
 
-                })
 
             });
 
-            worker.on("exit", exitCode => {
+            worker.on("exit", async () => {
                 const currentDate = Date.now()
                 const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/success`
                 const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/success`
@@ -143,86 +138,74 @@ async function runRepo({ workflow, workflowEmitter }) {
                     [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
                     [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
                 }
-                debugger;
-                fbDatabase.ref('/').update(update, async (error, response) => {
-                    if (!error) {
-                        debugger;
-                   
-                        workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
-                    } else {
-                        debugger;
-                        console.log('firebase error', error)
-                    }
+                const firebaseurl = `${process.env.projectUrl}/.json?auth=${process.env.idToken}`
+                await fetch(firebaseurl, { method: 'PATCH', body: JSON.stringify(update) })
 
-                })
+                workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+                setInterval(() => { }, 5000)
 
+                //   console.log(stdout);
+            });
+
+
+
+        }//runRepo
+
+
+
+        async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
+
+            const getContent = async function ({ path }) {
+                const fetchPath = `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`
+
+                const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
+                const data = await response.json()
+
+                return data;
+            }
+
+            const withoutTypeTree = tree.filter(f => f.type !== 'tree')
+            const contents = []
+            for (let t of withoutTypeTree) {
+                const content = await getContent({ path: t.path })
+
+                contents.push(content)
+            }
+
+            return contents
+        }
+
+        async function getWorkflowSourceCodeTree({ owner, repoName, token, selectedBranch }) {
+
+            // Retrieve source code for project
+            //Retrieved source code will be copied to project branch of forked agregators repo
+            //---- List branches endpoint----
+            /*required for the next endoint*/
+            const fetchPath = `https://api.github.com/repos/${owner}/${repoName}/branches`
+
+            const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
+            const data = await response.json()
+
+            const mainSha = data.find(d => d.name === selectedBranch)
+            const { commit: { sha } } = mainSha
+
+            //------Git database / Get a tree endpoint------
+            /*required to retrieve list of file and folder into*/
+            const treeResponse = await fetch(`https://api.github.com/repos/${owner}/${repoName}/git/trees/${sha}?recursive=1`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
+            const treeData = await treeResponse.json()
+            const { tree } = treeData
+
+            return tree
+        }
+        async function triggerAction({ ticket, body, gh_action_url }) {
+            await fetch(gh_action_url, {
+                method: 'post',
+                headers: {
+                    authorization: `token ${ticket}`,
+                    Accept: 'application/vnd.github.v3+json'
+                },
+                body
             })
 
-
-            setInterval(() => { }, 5000)
         }
-     //   console.log(stdout);
-    });
-
-
-
-}//runRepo
-
-
-
-async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
-
-    const getContent = async function ({ path }) {
-        const fetchPath = `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`
-
-        const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
-        const data = await response.json()
-
-        return data;
-    }
-
-    const withoutTypeTree = tree.filter(f => f.type !== 'tree')
-    const contents = []
-    for (let t of withoutTypeTree) {
-        const content = await getContent({ path: t.path })
-
-        contents.push(content)
-    }
-
-    return contents
-}
-
-async function getWorkflowSourceCodeTree({ owner, repoName, token, selectedBranch }) {
-
-    // Retrieve source code for project
-    //Retrieved source code will be copied to project branch of forked agregators repo
-    //---- List branches endpoint----
-    /*required for the next endoint*/
-    const fetchPath = `https://api.github.com/repos/${owner}/${repoName}/branches`
-
-    const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
-    const data = await response.json()
-
-    const mainSha = data.find(d => d.name === selectedBranch)
-    const { commit: { sha } } = mainSha
-
-    //------Git database / Get a tree endpoint------
-    /*required to retrieve list of file and folder into*/
-    const treeResponse = await fetch(`https://api.github.com/repos/${owner}/${repoName}/git/trees/${sha}?recursive=1`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
-    const treeData = await treeResponse.json()
-    const { tree } = treeData
-
-    return tree
-}
-async function triggerAction({ ticket, body, gh_action_url }) {
-    await fetch(gh_action_url, {
-        method: 'post',
-        headers: {
-            authorization: `token ${ticket}`,
-            Accept: 'application/vnd.github.v3+json'
-        },
-        body
-    })
-
-}
-module.exports = { runRepo, triggerAction }
+        module.exports = { runRepo, triggerAction }
