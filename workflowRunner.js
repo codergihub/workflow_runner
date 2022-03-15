@@ -2,6 +2,7 @@ const { fbRest } = require('./firebase-rest')
 
 const EventEmitter = require('events');
 const { runRepo } = require('./runRepo')
+
 const { timespan } = require('./utils/timespan')
 const fetch = require('node-fetch')
 const { triggerNextTask } = require('./helper')
@@ -26,7 +27,7 @@ class WorkFlowListender extends EventEmitter {
             await setEnvVars({ workflow })
             await runRepo({ workflow, workflowEmitter: this })
             setInterval(()=>{
-                console.log('.')
+            
             },0)
         })
 

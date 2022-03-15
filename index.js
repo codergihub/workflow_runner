@@ -119,10 +119,11 @@ function init({ taskId, idToken, workspaceName, projectUrl }) {
       queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
 
     }
-
+ 
     const workflowRunnerEmitter = workflowRunner({ workflows: queque })
 
     workflowRunnerEmitter.emit(workflowEvents.START_WORKFLOW_RUNNER, {})
+ 
 
     if (process.env.runSequence === "parallel" && process.env.runNext === 'true') {
 

@@ -4,6 +4,7 @@ const { fbRest } = require('./firebase-rest')
 const fs = require('fs')
 const makeDir = require('make-dir');
 const pather = require('path')
+const {runMain}=require('./workerService')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
 var exec = require('child_process').execSync
 async function runRepo({ workflow, workflowEmitter }) {
@@ -159,9 +160,10 @@ async function runRepo({ workflow, workflowEmitter }) {
 
             // })
 
-            const {main} = require(`${process.cwd()}/${repoName}/main`)
-        
-            await main({workflowEmitter,workflow})
+          //  const {main} = require(`${process.cwd()}/${repoName}/main`)
+        await runMain(`${process.cwd()}/${repoName}/main.js`)
+        workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+           // await main({workflowEmitter,workflow})
          
      //   }
      //   console.log(stdout);
