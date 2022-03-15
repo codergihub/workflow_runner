@@ -5,7 +5,7 @@ const fs = require('fs')
 const makeDir = require('make-dir');
 const pather = require('path')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
-var exec = require('child_process').execSync
+var exec = require('child_process').exec
 async function runRepo({ workflow, workflowEmitter }) {
 
     const { screenName,
