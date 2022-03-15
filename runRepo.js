@@ -141,7 +141,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                 const firebaseurl = `${process.env.projectUrl}/.json?auth=${process.env.idToken}`
                 await fetch(firebaseurl, { method: 'PATCH', body: JSON.stringify(update) })
 
-                workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+              //  workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
                 setInterval(() => { }, 5000)
 
                 //   console.log(stdout);
@@ -151,6 +151,10 @@ async function runRepo({ workflow, workflowEmitter }) {
         }
         //runRepo
     
+})
+cmd.on('exit',()=>{
+    console.log('execute exited')
+    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
 })
 
 }
