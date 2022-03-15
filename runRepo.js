@@ -6,6 +6,7 @@ const makeDir = require('make-dir');
 const pather = require('path')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
 var exec = require('child_process').exec
+var execFile = require('child_process').execFileSync
 async function runRepo({ workflow, workflowEmitter }) {
 
     const { screenName,
@@ -55,15 +56,15 @@ async function runRepo({ workflow, workflowEmitter }) {
     console.log('dependencies....', dependencies)
     //npm i ${dependencies}
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
-    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, async function (err, stdout, stderr) {
+    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`)//, async function (err, stdout, stderr) {
 
         // console.log('stderr', stderr)
-        if (err) {
+       // if (err) {
 
             // handle error
-            console.log('dependencies not installed', err)
-        }
-        else {
+       //     console.log('dependencies not installed', err)
+     //   }
+       // else {
 
             //4.RUN WORKFLOW ENTRY FILE
             console.log('dependencies installed')
@@ -77,45 +78,45 @@ async function runRepo({ workflow, workflowEmitter }) {
 
             //run main nodejs
             const main = `${process.cwd()}/${repoName}/main.js`
+            execFile(main)
+            // const worker = new Worker(main, { workerData: {} });
+            // worker.once("message", result => {
+            //     console.log(`${number}th Fibonacci No: ${result}`);
+            // });
 
-            const worker = new Worker(main, { workerData: {} });
-            worker.once("message", result => {
-                console.log(`${number}th Fibonacci No: ${result}`);
-            });
-
-            worker.on("error", async (error) => {
-                const currentDate = Date.now()
-                const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
-                const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/failed`
-                const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
-                const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
-                //update workflow lastRun
-                const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
-                const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
-                //update lastRun workspace
-                const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/failed`
-                //update lastRun task
-                const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/failed`
-                const update = {
-                    [updateWfResultLogRef]: 'failed',
-                    [updateWfLastLogResult]: 'failed',
-                    [updateWfEndLogRef]: currentDate,
-                    [updateWfLastLogEnd]: currentDate,
-                    [updateWsLogRef]: { '.sv': { 'increment': 1 } },
-                    [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
-                    [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
-                    [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
-                }
-                console.log(`workflow run error ${error}`);
-                const firebaseurl = `${process.env.projectUrl}/.json?auth=${process.env.idToken}`
-                await fetch(firebaseurl, { method: 'PATCH', body: JSON.stringify(update) })
+            // worker.on("error", async (error) => {
+            //     const currentDate = Date.now()
+            //     const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
+            //     const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/failed`
+            //     const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
+            //     const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
+            //     //update workflow lastRun
+            //     const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
+            //     const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
+            //     //update lastRun workspace
+            //     const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/failed`
+            //     //update lastRun task
+            //     const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/failed`
+            //     const update = {
+            //         [updateWfResultLogRef]: 'failed',
+            //         [updateWfLastLogResult]: 'failed',
+            //         [updateWfEndLogRef]: currentDate,
+            //         [updateWfLastLogEnd]: currentDate,
+            //         [updateWsLogRef]: { '.sv': { 'increment': 1 } },
+            //         [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
+            //         [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
+            //         [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
+            //     }
+            //     console.log(`workflow run error ${error}`);
+            //     const firebaseurl = `${process.env.projectUrl}/.json?auth=${process.env.idToken}`
+            //     await fetch(firebaseurl, { method: 'PATCH', body: JSON.stringify(update) })
                
 
 
-            });
+            // });
 
-            worker.on("exit", async () => {
-                const currentDate = Date.now()
+          //  worker.on("exit", async () => {
+             //   const currentDate = Date.now()
                 const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/success`
                 const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/success`
                 const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
@@ -145,30 +146,30 @@ async function runRepo({ workflow, workflowEmitter }) {
               //  setInterval(() => { }, 5000)
 
             
-            });
+           // });
 
 
-        }
+        //}
         //runRepo
     
-})
-cmd.on('close',()=>{
+//})
+//cmd.on('close',()=>{
  
   //  setTimeout(()=>{
         console.log('execute exited')
         workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
    // },5000)
 
-})
+//})
 
-cmd.on('error',(error)=>{
+// cmd.on('error',(error)=>{
 
-    setTimeout(()=>{
-        console.log('execute error',error)
-        workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
-    },5000)
+//     setTimeout(()=>{
+//         console.log('execute error',error)
+//         workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
+//     },5000)
  
-})
+// })
 
 }
 
