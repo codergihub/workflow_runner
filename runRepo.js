@@ -76,6 +76,9 @@ async function runRepo({ workflow, workflowEmitter }) {
             //  if(ok)
 
             //run main nodejs
+            (()=>{
+
+            })()
             const main = `${process.cwd()}/${repoName}/${workflowKey}/main.js`
 
             const worker = new Worker(main, { workerData: {} });
@@ -111,6 +114,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                     if (!error) {
                    
                         workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
+                        cmd.kill()
                     
                      
                     } else {
@@ -148,6 +152,8 @@ async function runRepo({ workflow, workflowEmitter }) {
                     if (!error) {
                         debugger;
                         workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+                      const processKilled=  cmd.kill()
+                      console.log('processKilled',processKilled)
                         
                     } else {
                         debugger;
@@ -159,7 +165,7 @@ async function runRepo({ workflow, workflowEmitter }) {
             })
 
 
-            setInterval(() => { }, 5000)
+          //  setInterval(() => { }, 5000)
         }
      //   console.log(stdout);
     });
