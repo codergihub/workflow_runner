@@ -32,13 +32,15 @@ class WorkFlowListender extends EventEmitter {
 
         this.on(workflowEvents.WORKFLOW_RUN_SUCCESSFUL, async function ({ taskId,
             workflowKey }) {
+                console.log(`workflows ${workflowKey} with success....`)
             const workflow = this.workflows.find(t => t.workflowKey > workflowKey)
             if (workflow) {
-
+                console.log(`has next....`)
                 await setEnvVars({ workflow })
                 await runRepo({ workflow, workflowEmitter: this })
             } else {
                 //run postWorkflow
+                console.log(`no next....`)
                 await postTaskRun({ result: 'success' })
                 console.log('workflows completed with success....')
                 process.exit(0)
