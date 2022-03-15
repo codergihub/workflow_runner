@@ -162,7 +162,7 @@ async function runRepo({ workflow, workflowEmitter }) {
 
           //  const {main} = require(`${process.cwd()}/${repoName}/main`)
         await runMain(`${process.cwd()}/${repoName}/main.js`)
-        workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+       // workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
            // await main({workflowEmitter,workflow})
          
      //   }
