@@ -1,4 +1,3 @@
-
 const fetch = require('node-fetch')
 const { Worker } = require("worker_threads");
 const { fbRest } = require('./firebase-rest')
@@ -6,7 +5,7 @@ const fs = require('fs')
 const makeDir = require('make-dir');
 const pather = require('path')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
-var execSync = require('child_process').execSync
+var exec = require('child_process').exec
 async function runRepo({ workflow, workflowEmitter }) {
 
     const { screenName,
@@ -56,15 +55,15 @@ async function runRepo({ workflow, workflowEmitter }) {
     console.log('dependencies....', dependencies)
     //npm i ${dependencies}
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
-    var cmd = execSync(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`)//, async function (err, stdout, stderr) {
+    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, async function (err, stdout, stderr) {
 
        // console.log('stderr', stderr)
-       // if (err) {
+        if (err) {
 
             // handle error
-           // console.log('dependencies not installed', err)
-      //  }
-      //  else {
+            console.log('dependencies not installed', err)
+        }
+        else {
 
             //4.RUN WORKFLOW ENTRY FILE
             console.log('dependencies installed')
@@ -73,7 +72,7 @@ async function runRepo({ workflow, workflowEmitter }) {
             const updateWfLastLogStart = { [`workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/start`]: currentDate }
             const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify({ ...updateWfLogRef, ...updateWfLastLogStart }) })
             const ok = response.ok
-            
+            debugger;
             //  if(ok)
 
             //run main nodejs
@@ -144,14 +143,14 @@ async function runRepo({ workflow, workflowEmitter }) {
                     [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
                     [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
                 }
-                
+                debugger;
                 fbDatabase.ref('/').update(update, async (error, response) => {
                     if (!error) {
-                        
+                        debugger;
                    
                         workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
                     } else {
-                        
+                        debugger;
                         console.log('firebase error', error)
                     }
 
@@ -160,10 +159,10 @@ async function runRepo({ workflow, workflowEmitter }) {
             })
 
 
-         //   setInterval(() => { }, 5000)
-      //  }
+            setInterval(() => { }, 5000)
+        }
      //   console.log(stdout);
-  //  });
+    });
 
 
 
@@ -178,7 +177,7 @@ async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
 
         const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
         const data = await response.json()
-        debugger;
+
         return data;
     }
 
@@ -206,7 +205,7 @@ async function getWorkflowSourceCodeTree({ owner, repoName, token, selectedBranc
 
     const mainSha = data.find(d => d.name === selectedBranch)
     const { commit: { sha } } = mainSha
-debugger;
+
     //------Git database / Get a tree endpoint------
     /*required to retrieve list of file and folder into*/
     const treeResponse = await fetch(`https://api.github.com/repos/${owner}/${repoName}/git/trees/${sha}?recursive=1`, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${token}` } })
@@ -227,12 +226,3 @@ async function triggerAction({ ticket, body, gh_action_url }) {
 
 }
 module.exports = { runRepo, triggerAction }
-
-
-
-
-
-
-/*
-
-*/
