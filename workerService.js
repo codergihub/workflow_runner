@@ -1,3 +1,4 @@
+const { Worker } = require("worker_threads");
 const runMain = (mainpath) => {
     return new Promise((resolve, reject) => {
 
