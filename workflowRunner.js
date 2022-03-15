@@ -25,6 +25,9 @@ class WorkFlowListender extends EventEmitter {
             await setTaskEnvVars({workflow})
             await setEnvVars({ workflow })
             await runRepo({ workflow, workflowEmitter: this })
+            setInterval(()=>{
+                console.log('running...!')
+            },5000)
         })
 
         this.on(workflowEvents.WORKFLOW_RUN_SUCCESSFUL, async function ({ taskId,

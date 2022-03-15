@@ -28,9 +28,7 @@ const taskId = splitted[11]
 
 console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
-setInterval(() => { 
-  console.log('running....')
-}, 5000)
+
 if (process.env.first === 'true') {
   
   process.env.first = 'false'
@@ -100,9 +98,6 @@ if (process.env.first === 'true') {
 }
 
 
-
-
-
 global.endTime = new Date()
 setInterval(() => {
   global.endTime.setSeconds(global.endTime.getSeconds() + 1)
@@ -113,7 +108,6 @@ setInterval(() => {
 
 function init({ taskId, idToken, workspaceName, projectUrl }) {
 
-
   const fetchUrl = `${projectUrl}/workflows/workspaces/${workspaceName}/tasks/${taskId}/.json?auth=${idToken}`
 
   fetch(fetchUrl).then(response => response.json()).then(async workflows => {
@@ -123,7 +117,6 @@ function init({ taskId, idToken, workspaceName, projectUrl }) {
     for (let wf in workflows) {
       const workflow = workflows[wf]
       queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
-
 
     }
 
