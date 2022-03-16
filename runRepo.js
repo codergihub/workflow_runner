@@ -147,8 +147,10 @@ async function runRepo({ workflow, workflowEmitter }) {
                 fbDatabase.ref('/').update(update, async (error, response) => {
                     if (!error) {
                         debugger;
-                   
-                      //  workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+                   setTimeout(()=>{
+                    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+                   },20000)
+                     
                     } else {
                         debugger;
                         console.log('firebase error', error)
@@ -164,9 +166,7 @@ async function runRepo({ workflow, workflowEmitter }) {
      //   console.log(stdout);
     });
 
-cmd.on('close',()=>{
-    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
-})
+
 
 }//runRepo
 
