@@ -148,7 +148,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                     if (!error) {
                         debugger;
                    
-                        workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+                      //  workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
                     } else {
                         debugger;
                         console.log('firebase error', error)
@@ -164,7 +164,9 @@ async function runRepo({ workflow, workflowEmitter }) {
      //   console.log(stdout);
     });
 
-
+cmd.on('close',()=>{
+    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+})
 
 }//runRepo
 
