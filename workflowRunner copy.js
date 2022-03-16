@@ -181,6 +181,6 @@ const currentDate =Date.now()
     }
 }
 
-module.exports = { workflowRunner, workflowEvents }
+module.exports = { workflowRunner, workflowEvents,postTaskRun,setTaskEnvVars,setWsEnvVars,setEnvVars }
 
 
