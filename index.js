@@ -122,6 +122,7 @@ function init({ taskId, idToken, workspaceName, projectUrl }) {
     }
 
   for(let workflow of queque){
+    console.log('workflow',workflow)
     await runRepo({ workflow })
   }
 
