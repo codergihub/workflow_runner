@@ -1,8 +1,7 @@
 //require('dotenv').config()
 const fetch = require('node-fetch')
-const { runRepo } = require('./runRepo')
 const { fbRest } = require('./firebase-rest')
-const { postTaskRun, setTaskEnvVars, setWsEnvVars, setEnvVars } = require('./workflowRunner')
+
 const splitted = process.env.parameters.split('--xxx--')
 
 process.env.gh_token = splitted[0]
@@ -31,9 +30,9 @@ console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
 
 if (process.env.first === 'true') {
-
+  
   process.env.first = 'false'
-
+  
   let totalTasks = 0
   let totalWorkflows = 0
   let start = Date.now()
@@ -75,7 +74,7 @@ if (process.env.first === 'true') {
 
       const updateWsLastLogSuccess = { [`workspaces/${workspaceName}/lastLog/success`]: 0 }
       const updateWsLastLogFailed = { [`workspaces/${workspaceName}/lastLog/failed`]: 0 }
-
+ 
       const response = await fetch(`${projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify({ ...updateWsTotalTasks, ...updateWsTotalWs, ...updateWsStart, ...updateWsLastLogTotalTasks, ...updateWsLastLogTotalWf, ...updateWsLastLogSuccess, ...updateWsLastLogFailed }) })
       const ok = response.ok
       //---------------------------------------------
@@ -107,47 +106,36 @@ setInterval(() => {
 
 
 
-async function init({ taskId, idToken, workspaceName, projectUrl }) {
+function init({ taskId, idToken, workspaceName, projectUrl }) {
 
   const fetchUrl = `${projectUrl}/workflows/workspaces/${workspaceName}/tasks/${taskId}/.json?auth=${idToken}`
 
-  const wfResponse = await fetch(fetchUrl)
-  const workflows = await wfResponse.json()
-  const { workflowRunner, workflowEvents } = require('./workflowRunner')
-  const queque = []
+  fetch(fetchUrl).then(response => response.json()).then(async workflows => {
+    const { workflowRunner, workflowEvents } = require('./workflowRunner')
+    const queque = []
 
-  for (let wf in workflows) {
-    const workflow = workflows[wf]
-    queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
+    for (let wf in workflows) {
+      const workflow = workflows[wf]
+      queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
 
-  }
-  console.log('queque......', queque.length)
-  queque.forEach(async workflow => {
-    console.log('workflow', workflow)
-    await setWsEnvVars({ workflow })
-    await setTaskEnvVars({ workflow })
-    await setEnvVars({ workflow })
-    await runRepo({ workflow })
+    }
+ 
+    const workflowRunnerEmitter = workflowRunner({ workflows: queque })
+
+    workflowRunnerEmitter.emit(workflowEvents.START_WORKFLOW_RUNNER, {})
+ 
+
+    if (process.env.runSequence === "parallel" && process.env.runNext === 'true') {
+
+      const { triggerNextTask } = require('./helper')
+      //-------------------------------------------------
+      await triggerNextTask(taskId)
+
+    }
+
+  }).catch(error => {
+    console.log('error', error)
+
   })
-
-
-
-  //const workflowRunnerEmitter = workflowRunner({ workflows: queque })
-
-  // workflowRunnerEmitter.emit(workflowEvents.START_WORKFLOW_RUNNER, {})
-
-
-  // if (process.env.runSequence === "parallel" && process.env.runNext === 'true') {
-
-  //   const { triggerNextTask } = require('./helper')
-  //   //-------------------------------------------------
-  //   await triggerNextTask(taskId)
-
-  // }
-
-
 }
-
-
-
 
