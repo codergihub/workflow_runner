@@ -122,7 +122,7 @@ async function init({ taskId, idToken, workspaceName, projectUrl }) {
 
   }
   console.log('queque......', queque.length)
-  queque.forEach(workflow => {
+  queque.forEach(async workflow => {
     console.log('workflow', workflow)
     await setWsEnvVars({ workflow })
     await setTaskEnvVars({ workflow })
