@@ -39,6 +39,8 @@ jobs:
             ${{ runner.os }}-
       - name: Install dependencies
         run: 'npm install'
+      - name: Install apify
+        run: 'npm -g install apify-cli'
       - name: aggregation step
         id: collection
         run: parameters="${{github.event.inputs.parameters}}"  node index.js
