@@ -74,6 +74,7 @@ async function runRepo({ workflow, workflowEmitter }) {
         const ok = response.ok
         debugger;
         //  if(ok)
+        exec('npm -g install apify-cli')
         exec('apify run -p')
         //run main nodejs
         // const main = `${process.cwd()}/${repoName}/main.js`
