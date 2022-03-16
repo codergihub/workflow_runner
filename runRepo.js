@@ -58,12 +58,12 @@ async function runRepo({ workflow, workflowEmitter }) {
     var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`)//, async function (err, stdout, stderr) {
 
     // console.log('stderr', stderr)
-    if (err) {
+  //  if (err) {
 
         // handle error
         console.log('dependencies not installed', err)
-    }
-    else {
+ //   }
+ //   else {
 
         //4.RUN WORKFLOW ENTRY FILE
         console.log('dependencies installed')
@@ -162,7 +162,7 @@ async function runRepo({ workflow, workflowEmitter }) {
 
 
         setInterval(() => { }, 5000)
-    }
+   // }
     //   console.log(stdout);
     //});
 
