@@ -2,7 +2,7 @@
 const fetch = require('node-fetch')
 const { runRepo } = require('./runRepo')
 const { fbRest } = require('./firebase-rest')
-
+const {postTaskRun,setTaskEnvVars,setWsEnvVars,setEnvVars }=require('./workflowRunner')
 const splitted = process.env.parameters.split('--xxx--')
 
 process.env.gh_token = splitted[0]
@@ -123,6 +123,9 @@ function init({ taskId, idToken, workspaceName, projectUrl }) {
 
   for(let workflow of queque){
     console.log('workflow',workflow)
+    await setWsEnvVars({workflow})
+    await setTaskEnvVars({workflow})
+    await setEnvVars({ workflow })
     await runRepo({ workflow })
   }
 

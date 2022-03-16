@@ -96,7 +96,7 @@ async function setEnvVars({ workflow }) {
     const fbWorkflowRef = `vars/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
     const response = await fetch(`${process.env.projectUrl}/${fbWorkflowRef}/.json?auth=${process.env.idToken}`, { method: 'GET' })
     const data =await response.json()
-    
+     
     if (data) {
      
         for (let d in data) {
@@ -104,6 +104,8 @@ async function setEnvVars({ workflow }) {
             let envValue = data[d]['value']
             
             process.env[envName] = envValue
+
+            console.log(process.env[envName],envValue)
         }
 
     }
@@ -122,7 +124,7 @@ async function setWsEnvVars({ workflow }){
             let envName = data[d]['varName']
             let envValue = data[d]['varValue']
             process.env[envName] = envValue
-            
+            console.log(process.env[envName],envValue)
         }
 
     }
@@ -139,6 +141,7 @@ async function setTaskEnvVars({ workflow }){
             let envName = data[d]['varName']
             let envValue = data[d]['varValue']
             process.env[envName] = envValue
+            console.log(process.env[envName],envValue)
         }
 
     }

@@ -7,7 +7,7 @@ const pather = require('path')
 const { runMain } = require('./workerService')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
 var exec = require('child_process').execSync
-const {postTaskRun,setTaskEnvVars,setWsEnvVars,setEnvVars }=require('./workflowRunner')
+
 async function runRepo({ workflow, workflowEmitter }) {
 
     const { screenName,
@@ -164,9 +164,7 @@ async function runRepo({ workflow, workflowEmitter }) {
     //  const {main} = require(`${process.cwd()}/${repoName}/main`)
     //    await runMain(`${process.cwd()}/${repoName}/main.js`)
     const { main } = require(`${process.cwd()}/${repoName}/main.js`)
-    await setWsEnvVars({workflow})
-    await setTaskEnvVars({workflow})
-    await setEnvVars({ workflow })
+
     //await runRepo({ workflow, workflowEmitter: this })
     await main()
     // workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
