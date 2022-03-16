@@ -4,7 +4,7 @@ const { fbRest } = require('./firebase-rest')
 const fs = require('fs')
 const makeDir = require('make-dir');
 const pather = require('path')
-const {runMain}=require('./workerService')
+const { runMain } = require('./workerService')
 const fbDatabase = fbRest().setIdToken(process.env.idToken).setProjectUri(process.env.projectUrl)
 var exec = require('child_process').execSync
 async function runRepo({ workflow, workflowEmitter }) {
@@ -58,116 +58,118 @@ async function runRepo({ workflow, workflowEmitter }) {
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
     var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`)//, async function (err, stdout, stderr) {
 
-       // console.log('stderr', stderr)
-       // if (err) {
-//
-            // handle error
+    // console.log('stderr', stderr)
+    // if (err) {
+    //
+    // handle error
     //        console.log('dependencies not installed', err)
-     //   }
-      //  else {
+    //   }
+    //  else {
 
-            //4.RUN WORKFLOW ENTRY FILE
-            console.log('dependencies installed')
-            const currentDate = Date.now()
-            const updateWfLogRef = { [`workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/start`]: currentDate }
-            const updateWfLastLogStart = { [`workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/start`]: currentDate }
-            const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify({ ...updateWfLogRef, ...updateWfLastLogStart }) })
-            const ok = response.ok
-            debugger;
-            //  if(ok)
+    //4.RUN WORKFLOW ENTRY FILE
+    console.log('dependencies installed')
+    const currentDate = Date.now()
+    const updateWfLogRef = { [`workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/start`]: currentDate }
+    const updateWfLastLogStart = { [`workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/start`]: currentDate }
+    const response = await fetch(`${process.env.projectUrl}/.json?auth=${process.env.idToken}`, { method: 'PATCH', body: JSON.stringify({ ...updateWfLogRef, ...updateWfLastLogStart }) })
+    const ok = response.ok
+    debugger;
+    //  if(ok)
 
-            //run main nodejs
-         
-       
-         
-         
+    //run main nodejs
 
-            // workflowEmitter.on("WORKFLOW_RUN_FAILED", error => {
-            //     const currentDate = Date.now()
-            //     const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
-            //     const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/failed`
-            //     const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
-            //     const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
-            //     //update workflow lastRun
-            //     const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
-            //     const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
-            //     //update lastRun workspace
-            //     const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/failed`
-            //     //update lastRun task
-            //     const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/failed`
-            //     const update = {
-            //         [updateWfResultLogRef]: 'failed',
-            //         [updateWfLastLogResult]: 'failed',
-            //         [updateWfEndLogRef]: currentDate,
-            //         [updateWfLastLogEnd]: currentDate,
-            //         [updateWsLogRef]: { '.sv': { 'increment': 1 } },
-            //         [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
-            //         [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
-            //         [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
-            //     }
-            //     console.log(`workflow run error ${error}`);
-            //     fbDatabase.ref('/').update(update, async (error, response) => {
-            //         if (!error) {
-                   
-            //           //  workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
-            //           //  cmd.kill()
-                    
-                     
-            //         } else {
-            //             console.log('firebase error', error)
-            //         }
-            //     })
-            // });
 
-            // workflowEmitter.on("WORKFLOW_RUN_SUCCESSFUL", exitCode => {
-            //     const currentDate = Date.now()
-            //     const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/success`
-            //     const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/success`
-            //     const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
-            //     const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
 
-            //     //update workflow lastRun
-            //     const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
-            //     const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
-            //     //
-            //     const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/success`
-            //     //update lastRun task
-            //     const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/success`
-            //     const update = {
-            //         [updateWfResultLogRef]: 'success',
-            //         [updateWfLastLogResult]: 'success',
-            //         [updateWfEndLogRef]: currentDate,
-            //         [updateWfLastLogEnd]: currentDate,
-            //         [updateWsLogRef]: { '.sv': { 'increment': 1 } },
-            //         [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
-            //         [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
-            //         [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
-            //     }
-            //     debugger;
-            //     fbDatabase.ref('/').update(update, async (error, response) => {
-            //         if (!error) {
-            //             debugger;
-            //         //    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
-            //         //  const processKilled=  cmd.kill()
-            //           console.log('processKilled',processKilled)
-                        
-            //         } else {
-            //             debugger;
-            //             console.log('firebase error', error)
-            //         }
 
-            //     })
 
-            // })
+    // workflowEmitter.on("WORKFLOW_RUN_FAILED", error => {
+    //     const currentDate = Date.now()
+    //     const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
+    //     const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/failed`
+    //     const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
+    //     const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
+    //     //update workflow lastRun
+    //     const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
+    //     const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
+    //     //update lastRun workspace
+    //     const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/failed`
+    //     //update lastRun task
+    //     const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/failed`
+    //     const update = {
+    //         [updateWfResultLogRef]: 'failed',
+    //         [updateWfLastLogResult]: 'failed',
+    //         [updateWfEndLogRef]: currentDate,
+    //         [updateWfLastLogEnd]: currentDate,
+    //         [updateWsLogRef]: { '.sv': { 'increment': 1 } },
+    //         [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
+    //         [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
+    //         [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
+    //     }
+    //     console.log(`workflow run error ${error}`);
+    //     fbDatabase.ref('/').update(update, async (error, response) => {
+    //         if (!error) {
 
-          //  const {main} = require(`${process.cwd()}/${repoName}/main`)
-        await runMain(`${process.cwd()}/${repoName}/main.js`)
-       // workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
-           // await main({workflowEmitter,workflow})
-         
-     //   }
-     //   console.log(stdout);
-  //  });
+    //           //  workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
+    //           //  cmd.kill()
+
+
+    //         } else {
+    //             console.log('firebase error', error)
+    //         }
+    //     })
+    // });
+
+    // workflowEmitter.on("WORKFLOW_RUN_SUCCESSFUL", exitCode => {
+    //     const currentDate = Date.now()
+    //     const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/success`
+    //     const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/success`
+    //     const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
+    //     const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
+
+    //     //update workflow lastRun
+    //     const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
+    //     const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
+    //     //
+    //     const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/success`
+    //     //update lastRun task
+    //     const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/success`
+    //     const update = {
+    //         [updateWfResultLogRef]: 'success',
+    //         [updateWfLastLogResult]: 'success',
+    //         [updateWfEndLogRef]: currentDate,
+    //         [updateWfLastLogEnd]: currentDate,
+    //         [updateWsLogRef]: { '.sv': { 'increment': 1 } },
+    //         [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
+    //         [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
+    //         [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
+    //     }
+    //     debugger;
+    //     fbDatabase.ref('/').update(update, async (error, response) => {
+    //         if (!error) {
+    //             debugger;
+    //         //    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+    //         //  const processKilled=  cmd.kill()
+    //           console.log('processKilled',processKilled)
+
+    //         } else {
+    //             debugger;
+    //             console.log('firebase error', error)
+    //         }
+
+    //     })
+
+    // })
+
+    //  const {main} = require(`${process.cwd()}/${repoName}/main`)
+    //    await runMain(`${process.cwd()}/${repoName}/main.js`)
+    const { main } = require(`${process.cwd()}/${repoName}/main.js`)
+    await main()
+    // workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
+    // await main({workflowEmitter,workflow})
+
+    //   }
+    //   console.log(stdout);
+    //  });
 
 
 

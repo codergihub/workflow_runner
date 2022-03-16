@@ -121,9 +121,10 @@ function init({ taskId, idToken, workspaceName, projectUrl }) {
 
     }
 
-    queque.forEach(async (workflow) => {
-      await runRepo({ workflow })
-    })
+  for(let workflow of queque){
+    await runRepo({ workflow })
+  }
+
     //const workflowRunnerEmitter = workflowRunner({ workflows: queque })
 
     // workflowRunnerEmitter.emit(workflowEvents.START_WORKFLOW_RUNNER, {})
