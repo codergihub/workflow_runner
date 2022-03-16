@@ -120,7 +120,7 @@ function init({ taskId, idToken, workspaceName, projectUrl }) {
       queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
 
     }
-
+console.log('queque......',queque.length)
   for(let workflow of queque){
     console.log('workflow',workflow)
     await setWsEnvVars({workflow})
