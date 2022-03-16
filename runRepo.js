@@ -163,7 +163,7 @@ async function runRepo({ workflow, workflowEmitter }) {
 
     //  const {main} = require(`${process.cwd()}/${repoName}/main`)
     //    await runMain(`${process.cwd()}/${repoName}/main.js`)
-    const { main } = require(`${process.cwd()}/${repoName}/main.js`)
+    const { main } = require(`${process.cwd()}/${repoName}/main`)
 
     //await runRepo({ workflow, workflowEmitter: this })
     await main()
