@@ -20,7 +20,7 @@ process.env.runSequence = splitted[13]
 process.env.taskId = splitted[11]
 process.env.first = splitted[14]
 process.env.wfrunid = splitted[15]
-process.env.api_key=splitted[16]
+process.env.api_key = splitted[16]
 const idToken = splitted[2]
 const projectUrl = splitted[7]
 const workspaceName = splitted[8]
@@ -31,9 +31,9 @@ console.log('taskId......', taskId)
 console.log('process.env.GITHUB_RUN_ID', process.env.GITHUB_RUN_ID)
 
 if (process.env.first === 'true') {
-  
+
   process.env.first = 'false'
-  
+
   let totalTasks = 0
   let totalWorkflows = 0
   let start = Date.now()
@@ -75,12 +75,12 @@ if (process.env.first === 'true') {
 
       const updateWsLastLogSuccess = { [`workspaces/${workspaceName}/lastLog/success`]: 0 }
       const updateWsLastLogFailed = { [`workspaces/${workspaceName}/lastLog/failed`]: 0 }
- 
+
       const response = await fetch(`${projectUrl}/.json?auth=${idToken}`, { method: 'PATCH', body: JSON.stringify({ ...updateWsTotalTasks, ...updateWsTotalWs, ...updateWsStart, ...updateWsLastLogTotalTasks, ...updateWsLastLogTotalWf, ...updateWsLastLogSuccess, ...updateWsLastLogFailed }) })
       const ok = response.ok
       //---------------------------------------------
       if (ok) {
-      await  init({ taskId, idToken, workspaceName, projectUrl })
+        init({ taskId, idToken, workspaceName, projectUrl })
       } else {
         console.log('firebase error')
         throw 'firebase error'
@@ -95,7 +95,7 @@ if (process.env.first === 'true') {
 
 } else {
 
-await  init({ taskId, idToken, projectUrl, workspaceName })
+  init({ taskId, idToken, projectUrl, workspaceName })
 }
 
 
@@ -108,25 +108,27 @@ setInterval(() => {
 
 
 async function init({ taskId, idToken, workspaceName, projectUrl }) {
-//process.env.localId
-console.log('process.env.localId',process.env.localId)
-console.log('projectUrl',projectUrl)
-console.log('workspaceName',workspaceName)
-console.log('idToken',idToken)
-  const googleAuthPath = `${projectUrl}/server/users/${process.env.localId}/workspaces/${workspaceName}/auth/google/.json?auth=${idToken}`
-  const googleAuthResponse =await fetch(googleAuthPath)
-  const googleAuthData = await googleAuthResponse.json()
-  console.log('googleAuthData',googleAuthData)
-  if(googleAuthData){
-    process.env.google_access_token =googleAuthData.access_token
-    process.env.google_refresh_token =googleAuthData.refresh_token
-  }
+  //process.env.localId
+
 
   debugger;
   const fetchUrl = `${projectUrl}/workflows/workspaces/${workspaceName}/tasks/${taskId}/.json?auth=${idToken}`
-  
+
 
   fetch(fetchUrl).then(response => response.json()).then(async workflows => {
+    console.log('process.env.localId', process.env.localId)
+    console.log('projectUrl', projectUrl)
+    console.log('workspaceName', workspaceName)
+    console.log('idToken', idToken)
+    const googleAuthPath = `${projectUrl}/server/users/${process.env.localId}/workspaces/${workspaceName}/auth/google/.json?auth=${idToken}`
+    const googleAuthResponse = await fetch(googleAuthPath)
+    const googleAuthData = await googleAuthResponse.json()
+    console.log('googleAuthData', googleAuthData)
+    if (googleAuthData) {
+      process.env.google_access_token = googleAuthData.access_token
+      process.env.google_refresh_token = googleAuthData.refresh_token
+    }
+    
     const { workflowRunner, workflowEvents } = require('./workflowRunner')
     const queque = []
 
@@ -135,11 +137,11 @@ console.log('idToken',idToken)
       queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
 
     }
- 
+
     const workflowRunnerEmitter = workflowRunner({ workflows: queque })
 
     workflowRunnerEmitter.emit(workflowEvents.START_WORKFLOW_RUNNER, {})
- 
+
 
     if (process.env.runSequence === "parallel" && process.env.runNext === 'true') {
 
