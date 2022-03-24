@@ -120,7 +120,7 @@ async function init({ taskId, idToken, workspaceName, projectUrl }) {
     console.log('projectUrl', projectUrl)
     console.log('workspaceName', workspaceName)
     console.log('idToken', idToken)
-    const googleAuthPath = `${projectUrl}/server/users/${process.env.localId}/workspaces/${workspaceName}/auth/google/.json?auth=${idToken}`
+    const googleAuthPath = `${projectUrl}/oauth/users/${process.env.localId}/workspaces/${workspaceName}/auth/google/.json?auth=${idToken}`
     const googleAuthResponse = await fetch(googleAuthPath)
     const googleAuthData = await googleAuthResponse.json()
     console.log('googleAuthData', googleAuthData)
@@ -128,7 +128,7 @@ async function init({ taskId, idToken, workspaceName, projectUrl }) {
       process.env.google_access_token = googleAuthData.access_token
       process.env.google_refresh_token = googleAuthData.refresh_token
     }
-    
+
     const { workflowRunner, workflowEvents } = require('./workflowRunner')
     const queque = []
 
