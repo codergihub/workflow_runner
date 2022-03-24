@@ -80,7 +80,7 @@ if (process.env.first === 'true') {
       const ok = response.ok
       //---------------------------------------------
       if (ok) {
-        init({ taskId, idToken, workspaceName, projectUrl })
+      await  init({ taskId, idToken, workspaceName, projectUrl })
       } else {
         console.log('firebase error')
         throw 'firebase error'
@@ -95,7 +95,7 @@ if (process.env.first === 'true') {
 
 } else {
 
-  init({ taskId, idToken, projectUrl, workspaceName })
+await  init({ taskId, idToken, projectUrl, workspaceName })
 }
 
 
