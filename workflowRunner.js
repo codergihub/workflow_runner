@@ -1,4 +1,4 @@
-const { fbRest } = require('./firebase-rest')
+const { fbRest,updateIdToken } = require('./firebase-rest')
 
 const EventEmitter = require('events');
 const { runRepo } = require('./runRepo')
@@ -20,6 +20,7 @@ class WorkFlowListender extends EventEmitter {
         super()
         this.workflows = workflows
         this.on(workflowEvents.START_WORKFLOW_RUNNER, async function () {
+            await updateIdToken()
             const workflow = this.workflows[0]
             await updateTaskLog({ workflow, workflows: this.workflows })
             await setWsEnvVars({workflow})
@@ -31,6 +32,7 @@ class WorkFlowListender extends EventEmitter {
 
         this.on(workflowEvents.WORKFLOW_RUN_SUCCESSFUL, async function ({ taskId,
             workflowKey }) {
+                await updateIdToken()
                 console.log(`workflows ${workflowKey} with success....`)
             const workflow = this.workflows.find(t => t.workflowKey > workflowKey)
             if (workflow) {
@@ -49,6 +51,7 @@ class WorkFlowListender extends EventEmitter {
 
         this.on(workflowEvents.WORKFLOW_RUN_FAILED, async function ({ taskName,
             workflowKey }) {
+                await updateIdToken()
             const workflow = this.workflows.find(t => t.workflowKey > workflowKey)
             if (workflow) {
                 await setEnvVars({ workflow })

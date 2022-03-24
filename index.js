@@ -10,7 +10,7 @@ process.env.idToken = splitted[2]
 process.env.email = splitted[3]
 process.env.localId = splitted[4]
 process.env.refreshToken = splitted[5]
-process.env.selectedContainer = splitted[6]
+process.env.timestamp = splitted[6]
 process.env.projectUrl = splitted[7]
 process.env.selectedWorkspace = splitted[8]
 process.env.runid = splitted[9]
@@ -20,6 +20,7 @@ process.env.runSequence = splitted[13]
 process.env.taskId = splitted[11]
 process.env.first = splitted[14]
 process.env.wfrunid = splitted[15]
+process.env.api_key=splitted[16]
 const idToken = splitted[2]
 const projectUrl = splitted[7]
 const workspaceName = splitted[8]
@@ -106,9 +107,19 @@ setInterval(() => {
 
 
 
-function init({ taskId, idToken, workspaceName, projectUrl }) {
+async function init({ taskId, idToken, workspaceName, projectUrl }) {
+//process.env.localId
+  const googleAuthPath = `${projectUrl}/server/users/${process.env.localId}/workspaces/${workspaceName}/auth/google/.json?auth=${idToken}`
+  const googleAuthResponse =await fetch(googleAuthPath)
+  const googleAuthData = await googleAuthResponse.json()
+  if(googleAuthData){
+    process.env.google_access_token =googleAuthData.access_token
+    process.env.google_refresh_token =googleAuthData.refresh_token
+  }
 
+  debugger;
   const fetchUrl = `${projectUrl}/workflows/workspaces/${workspaceName}/tasks/${taskId}/.json?auth=${idToken}`
+  
 
   fetch(fetchUrl).then(response => response.json()).then(async workflows => {
     const { workflowRunner, workflowEvents } = require('./workflowRunner')

@@ -19,8 +19,8 @@ function fbRest() {
 
             return this
         },
-        ref:  function(url) {
-            
+        ref: function (url) {
+
             this.url = url
             return this
         },
@@ -38,11 +38,11 @@ function fbRest() {
 
         },
         get: async function (cb) {
-        
-
+            await updateIdToken()
+debugger;
             fetch(`${this.projectUri}/${this.url}/.json?auth=${this.idToken}`, { method: 'GET' }).then(response => response.json()).then(data => {
 
-                cb && cb(null,data)
+                cb && cb(null, data)
             }).catch(error => {
 
                 cb && cb(error)
@@ -50,13 +50,14 @@ function fbRest() {
             })
         },
         update: async function (data, cb) {
-         
-   
+
+            await updateIdToken()
+debugger;
             fetch(`${this.projectUri}/${this.url}/.json?auth=${this.idToken}`, { method: 'PATCH', body: JSON.stringify(data) }).then(response => response.json()).then(data => {
-             
-                cb && cb(null,data)
+
+                cb && cb(null, data)
             }).catch(error => {
-                cb && cb(error,null)
+                cb && cb(error, null)
                 return this
             })
         },
@@ -68,20 +69,20 @@ function fbRest() {
                 return this
             })
         },
-        on:  function(event, cb) {
-            
+        on: function (event, cb) {
+
             switch (event) {
                 case "value":
                     const fetchPath = `${this.projectUri}/${this.url}.json?auth=${this.idToken}`
-                    
+
                     var childaddedEvent = new EventSource(fetchPath, {});
                     childaddedEvent.onerror = function (error) {
-                       
+
                         cb(error, null)
                     };
                     childaddedEvent.addEventListener('put', function (e) {
-                        const response =JSON.parse(e.data)
-                 
+                        const response = JSON.parse(e.data)
+
                         cb(null, response)
                         console.log(e.data)
                     })
@@ -92,17 +93,18 @@ function fbRest() {
 
         },
         once: function (type, cb) {
-            
+
             const fetchPath = `${this.projectUri}/${this.url}.json?auth=${this.idToken}`
 
             fetch(fetchPath).then(response => response.json()).then(data => {
-         
-                cb && cb(null,data)
+
+                cb && cb(null, data)
             }).catch(error => {
-                
-                cb && cb(error,null )
+
+                cb && cb(error, null)
                 return this
-            })},
+            })
+        },
         orderByChild: function (orderByChildValue) {
             this.orderByChildValue = orderByChildValue
             return this
@@ -124,7 +126,25 @@ function fbRest() {
 
 async function renewIdToken({ api_key, refresh_token }) {
     const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${api_key}`, { method: 'post', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `grant_type=refresh_token&refresh_token=${refresh_token}` })
+    
     const data = await response.json()
     return data
 }
-module.exports = { fbRest, renewIdToken }
+
+
+
+
+async function updateIdToken() {
+
+    const refreshToken = process.env.refreshToken
+    const api_key = process.env.api_key
+   // const timestamp = parseInt(process.env.timestamp)
+
+  //  if (Date.now() > timestamp) {
+        const response= await renewIdToken({ api_key, refreshToken })
+        debugger;
+  //  }
+
+
+}
+module.exports = { fbRest, renewIdToken, updateIdToken }
