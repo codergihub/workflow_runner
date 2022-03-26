@@ -6,9 +6,9 @@ async function getGoogleToken() {
     //refresh token
     const authresponse = await nodeFetch({ host: 'workflow-runner.netlify.app', path: `/.netlify/functions/google-refresh?refresh_token=${process.env.google_refresh_token}`, method: 'get', headers: { 'User-Agent': 'node.js', 'Content-Type': 'application/json' } })
     let authData = JSON.parse(authresponse)
-    const update = { google: { scope, timestamp: { '.sv': "timestamp" }, ...authData } }
+    const update = { scope, timestamp: { '.sv': "timestamp" }, ...authData } 
     const host = process.env.databaseHost
-    const path = `/oauth/users/${process.env.uid}/workspaces/${process.env.selectedWorkspace}/auth.json?auth=${process.env.idToken}`
+    const path = `/oauth/users/${process.env.uid}/workspaces/${process.env.selectedWorkspace}/auth/google.json?auth=${process.env.idToken}`
 
     const port = process.env.dbPort && parseInt(process.env.dbPort)
     const ssh = process.env.dbSsh === 'true'

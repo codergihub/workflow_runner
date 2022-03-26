@@ -128,6 +128,7 @@ async function renewIdToken({ api_key, refresh_token }) {
     const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${api_key}`, { method: 'post', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `grant_type=refresh_token&refresh_token=${refresh_token}` })
     
     const data = await response.json()
+    debugger;
     return data
 }
 
@@ -141,7 +142,7 @@ async function updateIdToken() {
    // const timestamp = parseInt(process.env.timestamp)
 
   //  if (Date.now() > timestamp) {
-        const response= await renewIdToken({ api_key, refreshToken })
+        const response= await renewIdToken({ api_key, refresh_token:refreshToken })
         debugger;
   //  }
 
