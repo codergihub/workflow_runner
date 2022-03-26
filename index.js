@@ -1,7 +1,7 @@
 //require('dotenv').config()
 const fetch = require('node-fetch')
 const { fbRest } = require('./firebase-rest')
-
+const { getGoogleToken } = require('./utils/google.oauth')
 const splitted = process.env.parameters.split('--xxx--')
 
 process.env.gh_token = splitted[0]
@@ -123,11 +123,15 @@ async function init({ taskId, idToken, workspaceName, projectUrl }) {
     const googleAuthPath = `${projectUrl}/oauth/users/${process.env.localId}/workspaces/${workspaceName}/auth/google/.json?auth=${idToken}`
     const googleAuthResponse = await fetch(googleAuthPath)
     const googleAuthData = await googleAuthResponse.json()
+
     console.log('googleAuthData', googleAuthData)
-    if (googleAuthData) {
-      process.env.google_access_token = googleAuthData.access_token
-      process.env.google_refresh_token = googleAuthData.refresh_token
-    }
+     if (googleAuthData) {
+       process.env.google_access_token = googleAuthData.access_token
+       process.env.google_refresh_token = googleAuthData.refresh_token
+       process.env.google_expires_in = googleAuthData.expires_in
+       process.env.google_timestamp = googleAuthData.timestamp
+       global.getGoogleToken = getGoogleToken
+     }
 
     const { workflowRunner, workflowEvents } = require('./workflowRunner')
     const queque = []
