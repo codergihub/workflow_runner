@@ -24,50 +24,125 @@ function fbRest() {
             this.url = url
             return this
         },
-        set: function (data, cb) {
+        set:async function (data) {
+            const idToken = process.env.idToken
+            const refreshToken = process.env.refreshToken
+            const api_key = process.env.api_key
+            const localId = process.env.localId
+            const projectUrl = process.env.projectUrl
+            const fetchUrl = this.url === '/' ? `${projectUrl}/.json?auth=${idToken}` : `${projectUrl}/${this.url}.json?auth=${idToken}`
+            const response = await fetch(fetchUrl, { method: 'PUT', body: JSON.stringify(data) })
+            const status = response.status
+            const statusText = response.statusText
+            if (status === 401 && statusText === 'Unauthorized') {
 
+                const data = await response.json()
+                const error = data['error']
+                if (error && error === 'Auth token is expired') {
 
-            fetch(`${this.projectUri}/${this.url}/.json?auth=${this.idToken}`, { method: 'put', body: JSON.stringify(data) }).then(response => response.json()).then(data => {
-
-                cb && cb()
-            }).catch(error => {
-
-                cb && cb(error)
-                return this
-            })
+                    await renewIdToken({ api_key, refresh_token: refreshToken, localId })
+                    const refreshedIdToken = process.env.idToken
+                    const fetchUrl2 = this.url === '/' ? `${projectUrl}/.json?auth=${refreshedIdToken}` : `${projectUrl}/${this.url}.json?auth=${refreshedIdToken}`
+                    const response = await fetch(fetchUrl2, { method: 'GET' })
+                    const data = await response.json()
+                    return data
+                } else {
+                    throw 'Unhandled firebase auth error'
+                }
+            } else {
+                const data = await response.json()
+                return data
+            }
 
         },
-        get: async function (cb) {
-            await updateIdToken()
-debugger;
-            fetch(`${this.projectUri}/${this.url}/.json?auth=${this.idToken}`, { method: 'GET' }).then(response => response.json()).then(data => {
+        get: async function () {
+            const idToken = process.env.idToken
+            const refreshToken = process.env.refreshToken
+            const api_key = process.env.api_key
+            const localId = process.env.localId
+            const projectUrl = process.env.projectUrl
+            const fetchUrl = this.url === '/' ? `${projectUrl}/.json?auth=${idToken}` : `${projectUrl}/${this.url}.json?auth=${idToken}`
+            const response = await fetch(fetchUrl, { method: 'GET' })
+            const status = response.status
+            const statusText = response.statusText
+            if (status === 401 && statusText === 'Unauthorized') {
 
-                cb && cb(null, data)
-            }).catch(error => {
-
-                cb && cb(error)
-                return this
-            })
+                const data = await response.json()
+                const error = data['error']
+                if (error && error === 'Auth token is expired') {
+                    await renewIdToken({ api_key, refresh_token: refreshToken, localId })
+                    const refreshedIdToken = process.env.idToken
+                    const fetchUrl2 = this.url === '/' ? `${projectUrl}/.json?auth=${refreshedIdToken}` : `${projectUrl}/${this.url}.json?auth=${refreshedIdToken}`
+                    const response = await fetch(fetchUrl2, { method: 'GET' })
+                    const data = await response.json()
+                    return data
+                } else {
+                    throw 'Unhandled firebase auth error'
+                }
+            } else {
+                const data = await response.json()
+                return data
+            }
         },
-        update: async function (data, cb) {
+        update: async function (data,) {
 
-            await updateIdToken()
-debugger;
-            fetch(`${this.projectUri}/${this.url}/.json?auth=${this.idToken}`, { method: 'PATCH', body: JSON.stringify(data) }).then(response => response.json()).then(data => {
+       
+            const idToken = process.env.idToken
+            const refreshToken = process.env.refreshToken
+            const api_key = process.env.api_key
+            const localId = process.env.localId
+            const projectUrl = process.env.projectUrl
+            const fetchUrl = this.url === '/' ? `${projectUrl}/.json?auth=${idToken}` : `${projectUrl}/${this.url}.json?auth=${idToken}`
+            const response = await fetch(fetchUrl, { method: 'PATCH', body: JSON.stringify(data) })
+            const status = response.status
+            const statusText = response.statusText
+            if (status === 401 && statusText === 'Unauthorized') {
 
-                cb && cb(null, data)
-            }).catch(error => {
-                cb && cb(error, null)
-                return this
-            })
+                const data = await response.json()
+                const error = data['error']
+                if (error && error === 'Auth token is expired') {
+
+                    await renewIdToken({ api_key, refresh_token: refreshToken, localId })
+                    const refreshedIdToken = process.env.idToken
+                    const fetchUrl2 = this.url === '/' ? `${projectUrl}/.json?auth=${refreshedIdToken}` : `${projectUrl}/${this.url}.json?auth=${refreshedIdToken}`
+                    const response = await fetch(fetchUrl2, { method: 'GET' })
+                    const data = await response.json()
+                    return data
+                } else {
+                    throw 'Unhandled firebase auth error'
+                }
+            } else {
+                const data = await response.json()
+                return data
+            }
         },
-        push: function (data, cb) {
-            fetch(`${this.projectUri}/${this.url}/.json?auth=${this.idToken}`, { method: 'post', body: JSON.stringify(data) }).then(response => response.json()).then(data => {
-                cb && cb()
-            }).catch(error => {
-                cb && cb(error)
-                return this
-            })
+        push: async function (data) {
+            const idToken = process.env.idToken
+            const refreshToken = process.env.refreshToken
+            const api_key = process.env.api_key
+            const localId = process.env.localId
+            const projectUrl = process.env.projectUrl
+            const fetchUrl = this.url === '/' ? `${projectUrl}/.json?auth=${idToken}` : `${projectUrl}/${this.url}.json?auth=${idToken}`
+            const response = await fetch(fetchUrl, { method: 'post', body: JSON.stringify(data) })
+            const status = response.status
+            const statusText = response.statusText
+            if (status === 401 && statusText === 'Unauthorized') {
+                const data = await response.json()
+                const error = data['error']
+                if (error && error === 'Auth token is expired') {
+                    await renewIdToken({ api_key, refresh_token: refreshToken, localId })
+                    const refreshedIdToken = process.env.idToken
+                    const fetchUrl2 = this.url === '/' ? `${projectUrl}/.json?auth=${refreshedIdToken}` : `${projectUrl}/${this.url}.json?auth=${refreshedIdToken}`
+                    const response = await fetch(fetchUrl2, { method: 'GET' })
+                    const data = await response.json()
+                    return data
+                } else {
+                    throw 'Unhandled firebase auth error'
+                }
+            } else {
+                const data = await response.json()
+                return data
+            }
         },
         on: function (event, cb) {
 
@@ -124,28 +199,29 @@ debugger;
     }
 }
 
-async function renewIdToken({ api_key, refresh_token }) {
+
+
+async function renewIdToken({ api_key, refresh_token, localId }) {
+
     const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${api_key}`, { method: 'post', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `grant_type=refresh_token&refresh_token=${refresh_token}` })
-    
-    const data = await response.json()
-    debugger;
-    return data
-}
 
+    const { id_token, refresh_token: newRefreshToken } = await response.json()
+    //update firebase
+    const fetchUrl = `${window.projectUrl}/.json?auth=${id_token}`
+    const responses = await fetch(fetchUrl, { method: 'PATCH', body: JSON.stringify({ [`oauth/users/${localId}/firebase/idToken`]: id_token, [`oauth/users/${localId}/firebase/refreshToken`]: newRefreshToken,[`oauth/users/${localId}/firebase/date`]: new Date()}) })
 
+    //update env
 
+    process.env.idToken = id_token
+    process.env.refreshToken = newRefreshToken
 
-async function updateIdToken() {
-
-    const refreshToken = process.env.refreshToken
-    const api_key = process.env.api_key
-   // const timestamp = parseInt(process.env.timestamp)
-
-  //  if (Date.now() > timestamp) {
-        const response= await renewIdToken({ api_key, refresh_token:refreshToken })
-        debugger;
-  //  }
-
+  
 
 }
-module.exports = { fbRest, renewIdToken, updateIdToken }
+
+
+
+
+
+
+module.exports = { fbRest, renewIdToken }
