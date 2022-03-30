@@ -101,7 +101,7 @@
     //process.env.localId
 
 
-    debugger;
+
     const fetchUrl = `workflows/workspaces/${workspaceName}/tasks/${taskId}`
     const workflows = await fbDatabase.ref(fetchUrl).get()
     console.log('process.env.localId', process.env.localId)
@@ -112,13 +112,15 @@
     const googleAuthData = await fbDatabase.ref(googleAuthPath).get()
 
 
-    console.log('googleAuthData', googleAuthData)
+   // console.log('googleAuthData', googleAuthData)
     if (googleAuthData) {
       process.env.google_access_token = googleAuthData.access_token
       process.env.google_refresh_token = googleAuthData.refresh_token
       process.env.google_expires_in = googleAuthData.expires_in
       process.env.google_timestamp = googleAuthData.timestamp
+      debugger;
       global.getGoogleToken = getGoogleToken
+      debugger;
     }
 
     const { workflowRunner, workflowEvents } = require('./workflowRunner')

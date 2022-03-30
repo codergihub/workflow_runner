@@ -74,12 +74,14 @@ async function runRepo({ workflow, workflowEmitter }) {
             await fbDatabase.ref("/").update({ ...updateWfLogRef, ...updateWfLastLogStart })
 
             const main = `${process.cwd()}/${repoName}/main.js`
-
+        
+           debugger;
             const worker = new Worker(main, { workerData: {} });
+            debugger;
             worker.once("message", result => {
                 console.log(`${number}th Fibonacci No: ${result}`);
             });
-
+            
             worker.on("error", async error => {
                 const currentDate = Date.now()
                 const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
@@ -204,6 +206,7 @@ async function getWorkflowSourceCodeTree({ owner, repoName, token, selectedBranc
     const data = await response.json()
 
     const mainSha = data.find(d => d.name === selectedBranch)
+
     const { commit: { sha } } = mainSha
 
     //------Git database / Get a tree endpoint------

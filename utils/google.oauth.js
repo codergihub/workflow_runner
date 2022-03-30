@@ -2,7 +2,7 @@ const { fbRest } = require('../firebase-rest')
 const fetch = require('node-fetch')
 const fbDatabase = fbRest()
 async function getGoogleToken() {
-
+debugger;
   const selectedWorkspace = process.env.selectedWorkspace
 
   const currenttimestamp = await fbDatabase.ref("/").update({ inc: { ".sv": "timestamp" } })

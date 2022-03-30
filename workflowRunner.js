@@ -20,14 +20,16 @@ class WorkFlowListender extends EventEmitter {
         super()
         this.workflows = workflows
         this.on(workflowEvents.START_WORKFLOW_RUNNER, async function () {
-          
+          debugger;
             const workflow = this.workflows[0]
             await updateTaskLog({ workflow, workflows: this.workflows })
+            debugger;
             await setWsEnvVars({ workflow })
             await setTaskEnvVars({ workflow })
             await setEnvVars({ workflow })
+            debugger;
             await runRepo({ workflow, workflowEmitter: this })
-
+debugger
         })
 
         this.on(workflowEvents.WORKFLOW_RUN_SUCCESSFUL, async function ({ taskId,
