@@ -5,7 +5,7 @@
 
 
 
-  const fetch = require('node-fetch')
+
   const { fbRest } = require('./firebase-rest')
   const { getGoogleToken } = require('./utils/google.oauth')
   const fbDatabase = fbRest()
