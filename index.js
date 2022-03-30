@@ -7,7 +7,7 @@
 
 
   const { fbRest } = require('./firebase-rest.js')
-  const { getGoogleToken } = require('./utils/google.oauth')
+  const { getGoogleToken } = require('./utils/google.oauth.js')
   const fbDatabase = fbRest()
   const splitted = process.env.parameters.split('--xxx--')
 
@@ -119,7 +119,7 @@
       process.env.google_expires_in = googleAuthData.expires_in
       process.env.google_timestamp = googleAuthData.timestamp
       debugger;
-      global.getGoogleToken = getGoogleToken
+    
       debugger;
     }
 
