@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 const { Worker } = require("worker_threads");
-const { fbRest } = require('./firebase-rest')
+const { fbRest } = require('./firebase-rest.js')
 const fs = require('fs')
 const makeDir = require('make-dir');
 const pather = require('path')

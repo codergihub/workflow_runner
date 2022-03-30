@@ -6,7 +6,7 @@
 
 
 
-  const { fbRest } = require('./firebase-rest')
+  const { fbRest } = require('./firebase-rest.js')
   const { getGoogleToken } = require('./utils/google.oauth')
   const fbDatabase = fbRest()
   const splitted = process.env.parameters.split('--xxx--')

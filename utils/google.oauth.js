@@ -1,4 +1,4 @@
-const { fbRest } = require('../firebase-rest')
+const { fbRest } = require('../firebase-rest.js')
 const fetch = require('node-fetch')
 const fbDatabase = fbRest()
 async function getGoogleToken() {

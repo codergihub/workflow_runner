@@ -1,4 +1,6 @@
-const fetch = require('node-fetch')
+// import { createRequire } from "module";
+// const require = createRequire(import.meta.url);
+const fetch =require('node-fetch')
 const EventSource = require('eventsource')
 function fbRest() {
     this.url = ''

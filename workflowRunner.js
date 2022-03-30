@@ -1,4 +1,4 @@
-const { fbRest, updateIdToken } = require('./firebase-rest')
+const { fbRest, updateIdToken } = require('./firebase-rest.js')
 
 const EventEmitter = require('events');
 const { runRepo } = require('./runRepo')
