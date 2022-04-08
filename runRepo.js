@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 const { Worker } = require("worker_threads");
-const { fbRest } = require('./firebase-rest.js')
+const { fbRest } = require('wflows')
 const fs = require('fs')
 const makeDir = require('make-dir');
 const pather = require('path')
@@ -45,10 +45,8 @@ async function runRepo({ workflow, workflowEmitter }) {
 
 
     for (let obj in originalDependencies) {
-
         const value = originalDependencies[obj].replace('^', '')
         dependencyArray.push(`${obj}@${value}`)
-
     }
     dependencies = dependencyArray.join(' ')
 
