@@ -112,7 +112,7 @@
     const googleAuthData = await fbDatabase.ref(googleAuthPath).get()
 
 
-   // console.log('googleAuthData', googleAuthData)
+    console.log('googleAuthData', googleAuthData)
     if (googleAuthData) {
       process.env.google_access_token = googleAuthData.access_token
       process.env.google_refresh_token = googleAuthData.refresh_token
