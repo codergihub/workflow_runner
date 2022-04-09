@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { fbRest } = require('./firebase-rest.js')
+const { fbRest } = require('wflows')
 const fbDatabase = fbRest()
 const fetch = require('node-fetch')
 
