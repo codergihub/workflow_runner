@@ -107,7 +107,7 @@ async function runRepo({ workflow, workflowEmitter }) {
                 await fbDatabase.ref('/').update(update)
 
 
-                workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey })
+                workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey,error })
                 debugger;
 
 

@@ -52,7 +52,7 @@ debugger
         })
 
         this.on(workflowEvents.WORKFLOW_RUN_FAILED, async function ({ taskName,
-            workflowKey }) {
+            workflowKey,error }) {
           
             const workflow = this.workflows.find(t => t.workflowKey > workflowKey)
             if (workflow) {
@@ -61,7 +61,7 @@ debugger
             } else {
                 //run postWorkflow
                 await postTaskRun({ result: 'failed' })
-                console.log('workflows completed with error....')
+                console.log('workflows completed with error....',error)
                 process.exit(1)
             }
         })
