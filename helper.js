@@ -18,7 +18,7 @@ async function triggerNextTask(taskId) {
         const runid = Date.now()
         const start = runid
         const runNext = "true"
-
+        const api_key = splitted[16]
         //FIND NEXT TASK
         const fetchUrl = `server/workspaces/${workspaceName}/tasks`
         const tasks = await fetchTasks(fetchUrl)
@@ -32,7 +32,8 @@ async function triggerNextTask(taskId) {
             const wfrunid = process.env.wfrunid
             debugger;
 
-            const parameters = `${token}--xxx--${owner}--xxx--${idToken}--xxx--${email}--xxx--${uid}--xxx--${refreshToken}--xxx--${'selectedContainer'}--xxx--${process.env.projectUrl}--xxx--${workspaceName}--xxx--${runid}--xxx--${start}--xxx--${nextTaskId}--xxx--${runNext}--xxx--${runSequence}--xxx--${first}--xxx--${wfrunid}`
+            const parameters = `${token}--xxx--${owner}--xxx--${idToken}--xxx--${email}--xxx--${uid}--xxx--${refreshToken}--xxx--${'selectedContainer'}--xxx--${process.env.projectUrl}--xxx--${workspaceName}--xxx--${runid}--xxx--${start}--xxx--${nextTaskId}--xxx--${runNext}--xxx--${runSequence}--xxx--${first}--xxx--${wfrunid}--xxx--${api_key}`
+
             debugger;
             const body = JSON.stringify({ ref: 'main', inputs: { projectName: workspaceName, parameters } })
 
