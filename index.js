@@ -1,12 +1,9 @@
-//require('dotenv').config()
+
 
 (async () => {
-
-
-
-
-
+  require('dotenv').config()
   const { fbRest } = require('wflows')
+  const { runRepo } = require('./runRepo')
   //const { getGoogleToken } = require('./utils/google.oauth.js')
   const fbDatabase = fbRest()
   const splitted = process.env.parameters.split('--xxx--')
@@ -70,9 +67,9 @@
       totalWorkflows = totalWorkflows + total
     })
     //save total tasks and workflow count to firebase
-    const updateWsTotalTasks = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalTasks`]: totalTasks }
-    const updateWsTotalWs = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalWorkflows`]: totalWorkflows }
-    const updateWsStart = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/start`]: start }
+    // const updateWsTotalTasks = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalTasks`]: totalTasks }
+    // const updateWsTotalWs = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/totalWorkflows`]: totalWorkflows }
+    // const updateWsStart = { [`workspaceLogs/${workspaceName}/logs/${process.env.wfrunid}/start`]: start }
     //update lastRun workspace
     const updateWsLastLogTotalTasks = { [`workspaces/${workspaceName}/lastLog/totalTasks`]: totalTasks }
     const updateWsLastLogTotalWf = { [`workspaces/${workspaceName}/lastLog/totalWorkflows`]: totalWorkflows }
@@ -80,7 +77,7 @@
     const updateWsLastLogSuccess = { [`workspaces/${workspaceName}/lastLog/success`]: 0 }
     const updateWsLastLogFailed = { [`workspaces/${workspaceName}/lastLog/failed`]: 0 }
 
-    await fbDatabase.ref("/").update({ ...updateWsTotalTasks, ...updateWsTotalWs, ...updateWsStart, ...updateWsLastLogTotalTasks, ...updateWsLastLogTotalWf, ...updateWsLastLogSuccess, ...updateWsLastLogFailed })
+    await fbDatabase.ref("/").update({ ...updateWsLastLogTotalTasks, ...updateWsLastLogTotalWf, ...updateWsLastLogSuccess, ...updateWsLastLogFailed })
 
     //---------------------------------------------
     await init({ taskId, idToken, workspaceName, projectUrl })
@@ -104,6 +101,14 @@
 
     const fetchUrl = `workflows/workspaces/${workspaceName}/tasks/${taskId}`
     const workflows = await fbDatabase.ref(fetchUrl).get()
+    const queque = []
+
+    for (let wf in workflows) {
+      const workflow = workflows[wf]
+      queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
+
+    }
+    debugger;
     console.log('process.env.localId', process.env.localId)
     console.log('projectUrl', projectUrl)
     console.log('workspaceName', workspaceName)
@@ -119,24 +124,13 @@
       process.env.google_expires_in = googleAuthData.expires_in
       process.env.google_timestamp = googleAuthData.timestamp
       debugger;
-    
+
       debugger;
     }
 
-    const { workflowRunner, workflowEvents } = require('./workflowRunner')
-    const queque = []
-
-    for (let wf in workflows) {
-      const workflow = workflows[wf]
-      queque.push({ taskId, ...workflow, workflowKey: parseInt(wf) })
-
-    }
-
-    const workflowRunnerEmitter = workflowRunner({ workflows: queque })
-
-    workflowRunnerEmitter.emit(workflowEvents.START_WORKFLOW_RUNNER, {})
 
 
+    debugger;
     if (process.env.runSequence === "parallel" && process.env.runNext === 'true') {
 
       const { triggerNextTask } = require('./helper')
@@ -144,6 +138,11 @@
       await triggerNextTask(taskId)
 
     }
+    await runRepo({ workflow:queque[0]})
+
+
+
+
 
 
   }

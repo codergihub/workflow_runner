@@ -162,8 +162,8 @@ async function postTaskRun() {
     const duration = `${hours}:${mins}:${seconds}`
 
     const currentDate = Date.now()
-    const updateWsLastTaskLogRef = { [`workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/last`]: currentDate }
-    const updateTaskLogEnd = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/end`]: currentDate }
+    //const updateWsLastTaskLogRef = { [`workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/last`]: currentDate }
+  //  const updateTaskLogEnd = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/end`]: currentDate }
 
     //update workspace lastLog
     const updateWsLastLogTotalTasks = { [`workspaces/${process.env.selectedWorkspace}/lastLog/last`]: currentDate }
@@ -171,7 +171,7 @@ async function postTaskRun() {
     const updateTaskLastLogEnd = { [`workspaces/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/lastLog/end`]: currentDate }
 
 
-    const updateBody = { ...updateTaskLogEnd, ...updateWsLastTaskLogRef, ...updateWsLastLogTotalTasks, ...updateTaskLastLogEnd }
+    const updateBody = {  ...updateWsLastLogTotalTasks, ...updateTaskLastLogEnd }
 
     await fbDatabase.ref("/").update(updateBody)
 

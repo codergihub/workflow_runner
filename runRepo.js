@@ -5,8 +5,10 @@ const fs = require('fs')
 const makeDir = require('make-dir');
 const pather = require('path')
 const fbDatabase = fbRest()
-var exec = require('child_process').exec
-async function runRepo({ workflow, workflowEmitter }) {
+const { timespan } = require('./utils/timespan')
+const {triggerNextTask}=require('./helper')
+var exec = require('child_process').execSync
+async function runRepo({ workflow }) {
 
     const { screenName,
         repoName,
@@ -53,122 +55,224 @@ async function runRepo({ workflow, workflowEmitter }) {
     console.log('dependencies....', dependencies)
     //npm i ${dependencies}
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
-    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`, async function (err, stdout, stderr) {
-
-        // console.log('stderr', stderr)
-        if (err) {
-
-            // handle error
-            console.log('dependencies not installed', err)
-        }
-        else {
-
-            //4.RUN WORKFLOW ENTRY FILE
-            console.log('dependencies installed')
-            const currentDate = Date.now()
-            const updateWfLogRef = { [`workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/start`]: currentDate }
-
-            const updateWfLastLogStart = { [`workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog`]: { start: currentDate, end: null, result: null } }
-            await fbDatabase.ref("/").update({ ...updateWfLogRef, ...updateWfLastLogStart })
-
-            const main = `${process.cwd()}/${repoName}/main.js`
-        
-           debugger;
-            const worker = new Worker(main, { workerData: {} });
-            debugger;
-            worker.once("message", result => {
-                console.log(`${number}th Fibonacci No: ${result}`);
-            });
-            
-            worker.on("error", async error => {
-                const currentDate = Date.now()
-                const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
-                const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/failed`
-                const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
-                const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
-                //update workflow lastRun
-                const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
-                const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
-                //update lastRun workspace
-                const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/failed`
-                //update lastRun task
-                const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/failed`
-                const update = {
-                    [updateWfResultLogRef]: 'failed',
-                    [updateWfLastLogResult]: 'failed',
-                    [updateWfEndLogRef]: currentDate,
-                    [updateWfLastLogEnd]: currentDate,
-                    [updateWsLogRef]: { '.sv': { 'increment': 1 } },
-                    [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
-                    [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
-                    [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
-                }
-                console.log(`workflow run error ${error}`);
-                await fbDatabase.ref('/').update(update)
+    debugger;
+    var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`)//, async function (err, stdout, stderr) {
 
 
-                workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey,error })
-                debugger;
+    console.log('dependencies installed')
+    const currentDate = Date.now()
+    const updateWfLogRef = { [`workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/start`]: currentDate }
 
+    const updateWfLastLogStart = { [`workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog`]: { start: currentDate, end: null, result: null } }
+    await fbDatabase.ref("/").update({ ...updateWfLogRef, ...updateWfLastLogStart })
 
+    const main = `${process.cwd()}/${repoName}/main.js`
 
-
-
-
-            });
-
-            worker.on("exit", async exitCode => {
-                if (exitCode === 0) {
-                    const currentDate = Date.now()
-                    const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/success`
-                    const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/success`
-                    const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
-                    const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
-
-                    //update workflow lastRun
-                    const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
-                    const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
-                    //
-                    const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/success`
-                    //update lastRun task
-                    const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/success`
-                    const update = {
-                        [updateWfResultLogRef]: 'success',
-                        [updateWfLastLogResult]: 'success',
-                        [updateWfEndLogRef]: currentDate,
-                        [updateWfLastLogEnd]: currentDate,
-                        [updateWsLogRef]: { '.sv': { 'increment': 1 } },
-                        [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
-                        [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
-                        [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
-                    }
-                    debugger;
-                    await fbDatabase.ref('/').update(update)
-
-                    debugger;
-
-                    workflowEmitter.emit("WORKFLOW_RUN_SUCCESSFUL", { taskId, workflowKey })
-
-
-
-                }
-
-
-
-
-            })
-
-
-            setInterval(() => { }, 5000)
-        }
-        //   console.log(stdout);
+    await updateTaskLog({ workflow, workflows: this.workflows })
+    debugger;
+    await setWsEnvVars({ workflow })
+    await setTaskEnvVars({ workflow })
+    await setEnvVars({ workflow })
+    debugger;
+    const worker = new Worker(main, { workerData: {} });
+    debugger;
+    worker.once("message", result => {
+        console.log(`${number}th Fibonacci No: ${result}`);
     });
+
+    worker.on("error", async error => {
+        const currentDate = Date.now()
+        const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/failed`
+        const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/failed`
+        const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
+        const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
+        //update workflow lastRun
+        const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
+        const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
+        //update lastRun workspace
+        const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/failed`
+        //update lastRun task
+        const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/failed`
+        const update = {
+            [updateWfResultLogRef]: 'failed',
+            [updateWfLastLogResult]: 'failed',
+            [updateWfEndLogRef]: currentDate,
+            [updateWfLastLogEnd]: currentDate,
+            [updateWsLogRef]: { '.sv': { 'increment': 1 } },
+            [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
+            [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
+            [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
+        }
+        console.log(`workflow run error ${error}`);
+        await fbDatabase.ref('/').update(update)
+        await postTaskRun({ result: 'failed' })
+
+        //   workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey,error })
+        debugger;
+
+        process.exit(1)
+
+
+
+
+    });
+
+    worker.on("exit", async exitCode => {
+        if (exitCode === 0) {
+            const currentDate = Date.now()
+            const updateWsLogRef = `workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/success`
+            const updateTaskLogRef = `taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/success`
+            const updateWfResultLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/result`
+            const updateWfEndLogRef = `workflowLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${taskId}/workflows/${workflowKey}/log/end`
+
+            //update workflow lastRun
+            const updateWfLastLogEnd = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/end`
+            const updateWfLastLogResult = `workflows/workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/${workflowKey}/lastLog/result`
+            //
+            const updateWsLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/lastLog/success`
+            //update lastRun task
+            const updateTaskLastLogTotalTasks = `workspaces/${process.env.selectedWorkspace}/tasks/${taskId}/lastLog/success`
+            const update = {
+                [updateWfResultLogRef]: 'success',
+                [updateWfLastLogResult]: 'success',
+                [updateWfEndLogRef]: currentDate,
+                [updateWfLastLogEnd]: currentDate,
+                [updateWsLogRef]: { '.sv': { 'increment': 1 } },
+                [updateTaskLogRef]: { '.sv': { 'increment': 1 } },
+                [updateWsLastLogTotalTasks]: { '.sv': { 'increment': 1 } },
+                [updateTaskLastLogTotalTasks]: { '.sv': { 'increment': 1 } }
+            }
+            debugger;
+            await fbDatabase.ref('/').update(update)
+            await postTaskRun({ result: 'success' })
+            debugger;
+
+            process.exit(0)
+
+
+
+        }
+
+
+
+
+    })
+
+
+    //setInterval(() => { }, 5000)
+    //  }
+    //   console.log(stdout);
+    // });
 
 
 
 }//runRepo
 
+async function updateTaskLog({ workflow, workflows }) {
+    const currentDate = Date.now()
+    //update task log start
+    //  const updateTaskTotal = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/total`]: workflows.length }
+    // //  const updateTaskStart = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/start`]: currentDate }
+    //   const updateTaskFailed = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/failed`]: 0 }
+    //   const updateTaskSuccess = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/success`]: 0 }
+    //UPDATE task lastLog
+    const updateTaskLastLogTotal = { [`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/total`]: 1 }
+    const updateTaskLastLogStart = { [`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/start`]: currentDate }
+    const updateTaskLastLogFailed = { [`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/failed`]: 0 }
+    const updateTaskLastLogSuccess = { [`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/success`]: 0 }
 
+    await fbDatabase.ref("/").update({ ...updateTaskLastLogTotal, ...updateTaskLastLogStart, ...updateTaskLastLogFailed, ...updateTaskLastLogSuccess })
+}
+
+async function setEnvVars({ workflow }) {
+
+    const fbWorkflowRef = `vars/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/workflows/${workflow.workflowKey}/vars`
+    const data = await fbDatabase.ref(fbWorkflowRef).get()
+
+
+    if (data) {
+
+        for (let d in data) {
+            let envName = data[d]['inputName']
+            let envValue = data[d]['value']
+
+            process.env[envName] = envValue
+        }
+
+    }
+
+}
+
+async function setWsEnvVars({ workflow }) {
+    const fbWorkflowRef = `vars/workspaces/${process.env.selectedWorkspace}/vars`
+    const data = await fbDatabase.ref(fbWorkflowRef).get()
+
+
+    if (data) {
+
+
+        for (let d in data) {
+            let envName = data[d]['varName']
+            let envValue = data[d]['varValue']
+            process.env[envName] = envValue
+
+        }
+
+    }
+}
+
+async function setTaskEnvVars({ workflow }) {
+    const fbWorkflowRef = `vars/workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/vars`
+    const data = await fbDatabase.ref(fbWorkflowRef).get()
+
+    if (data) {
+
+
+        for (let d in data) {
+            let envName = data[d]['varName']
+            let envValue = data[d]['varValue']
+            process.env[envName] = envValue
+        }
+
+    }
+}
+
+async function postTaskRun() {
+    let html_url = ''
+    if (process.env.GITHUB_RUN_ID) {
+        const fetchPath = `https://api.github.com/repos/${process.env.owner}/workflow_runner/actions/runs/${process.env.GITHUB_RUN_ID}`
+
+        const response = await fetch(fetchPath, { method: 'GET', headers: { Accept: "application/vnd.github.v3+json", authorization: `token ${process.env.gh_token}` } })
+        const data = await response.json()
+        html_url = data.html_url
+
+    }
+    var date1 = new Date(parseInt(process.env.start))
+    var date2 = new Date(global.endTime.getTime())
+    const { hours, mins, seconds } = timespan(date2, date1)
+    const duration = `${hours}:${mins}:${seconds}`
+
+    const currentDate = Date.now()
+    //const updateWsLastTaskLogRef = { [`workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/last`]: currentDate }
+    //  const updateTaskLogEnd = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/end`]: currentDate }
+
+    //update workspace lastLog
+    const updateWsLastLogTotalTasks = { [`workspaces/${process.env.selectedWorkspace}/lastLog/last`]: currentDate }
+    //update task lastLog
+    const updateTaskLastLogEnd = { [`workspaces/${process.env.selectedWorkspace}/tasks/${process.env.taskId}/lastLog/end`]: currentDate }
+
+
+    const updateBody = { ...updateWsLastLogTotalTasks, ...updateTaskLastLogEnd }
+
+    await fbDatabase.ref("/").update(updateBody)
+
+
+
+    if (process.env.runSequence === 'sequential' && process.env.runNext === 'true') {
+
+        await triggerNextTask(process.env.taskId)
+    }
+}
 
 async function getContentsFromWorkflowRepo({ owner, repoName, tree, token }) {
 
