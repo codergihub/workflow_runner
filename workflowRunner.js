@@ -46,7 +46,7 @@ debugger
                 console.log(`no next....`)
                 await postTaskRun({ result: 'success' })
                 console.log('workflows completed with success....')
-                process.exit(0)
+               // process.exit(0)
             }
 
         })
@@ -62,7 +62,7 @@ debugger
                 //run postWorkflow
                 await postTaskRun({ result: 'failed' })
                 console.log('workflows completed with error....',error)
-                process.exit(1)
+              //  process.exit(1)
             }
         })
 
