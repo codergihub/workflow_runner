@@ -242,7 +242,7 @@ async function postTaskRun() {
 
     }
     var date1 = new Date(parseInt(process.env.start))
-    var date2 = Date.now()
+    var date2 = new Date (Date.now())
     const { hours, mins, seconds } = timespan(date2, date1)
     const duration = `${hours}:${mins}:${seconds}`
 
