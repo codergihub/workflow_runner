@@ -147,7 +147,7 @@ async function runRepo({ workflow }) {
             await postTaskRun({ result: 'success' })
             debugger;
 
-            process.exit(0)
+           // process.exit(0)
 
 
 
