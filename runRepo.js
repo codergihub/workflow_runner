@@ -57,7 +57,7 @@ async function runRepo({ workflow }) {
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
     debugger;
     var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`)//, async function (err, stdout, stderr) {
-      exec(`node ${process.cwd()}/${repoName}/main.js`)
+
 
     console.log('dependencies installed')
     const currentDate = Date.now()
@@ -73,6 +73,7 @@ async function runRepo({ workflow }) {
     await setWsEnvVars({ workflow })
     await setTaskEnvVars({ workflow })
     await setEnvVars({ workflow })
+    exec(`node ${process.cwd()}/${repoName}/main.js`)
     debugger;
   //  const worker = new Worker(main, { workerData: {} });
     debugger;
