@@ -57,7 +57,7 @@ async function runRepo({ workflow }) {
     //process.env.LOCAL === 'true' ? `echo 'local dev....'` : 
     debugger;
     var cmd = exec(process.env.LOCAL === 'true' ? `echo 'local dev....'` : `npm install ${dependencies}`)//, async function (err, stdout, stderr) {
-      exec(`node main.js`)
+      exec(`node ${process.cwd()}/${repoName}/main.js`)
 
     console.log('dependencies installed')
     const currentDate = Date.now()
