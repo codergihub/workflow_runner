@@ -23,9 +23,11 @@ async function triggerNextTask(taskId) {
         const fetchUrl = `server/workspaces/${workspaceName}/tasks`
         const tasks = await fetchTasks(fetchUrl)
         const currentTaskIndex = tasks.findIndex(t => t.taskId === taskId)
+        debugger;
         const nextTaskIndex = currentTaskIndex + 1
         const nextTask = tasks.find((t, i) => i === nextTaskIndex)
         if (nextTask) {
+            debugger;
             const nextTaskId = nextTask['taskId']
             const runSequence = nextTask['runSequence']
             const first = 'false'
@@ -55,6 +57,7 @@ async function triggerNextTask(taskId) {
             }
 
         } else {
+            debugger;
             console.log('no more tasks to run')
         }
 

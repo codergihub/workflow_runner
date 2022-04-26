@@ -159,10 +159,7 @@ async function runRepo({ workflow }) {
     })
 
 
-    //setInterval(() => { }, 5000)
-    //  }
-    //   console.log(stdout);
-    // });
+
 
 
 
@@ -171,10 +168,7 @@ async function runRepo({ workflow }) {
 async function updateTaskLog({ workflow, workflows }) {
     const currentDate = Date.now()
     //update task log start
-    //  const updateTaskTotal = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/total`]: workflows.length }
-    // //  const updateTaskStart = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/start`]: currentDate }
-    //   const updateTaskFailed = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/failed`]: 0 }
-    //   const updateTaskSuccess = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${workflow.taskId}/log/success`]: 0 }
+
     //UPDATE task lastLog
     const updateTaskLastLogTotal = { [`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/total`]: 1 }
     const updateTaskLastLogStart = { [`workspaces/${process.env.selectedWorkspace}/tasks/${workflow.taskId}/lastLog/start`]: currentDate }
@@ -253,8 +247,7 @@ async function postTaskRun() {
     const duration = `${hours}:${mins}:${seconds}`
 
     const currentDate = Date.now()
-    //const updateWsLastTaskLogRef = { [`workspaceLogs/${process.env.selectedWorkspace}/logs/${process.env.wfrunid}/last`]: currentDate }
-    //  const updateTaskLogEnd = { [`taskLogs/${process.env.selectedWorkspace}/${process.env.wfrunid}/tasks/${process.env.taskId}/log/end`]: currentDate }
+
 
     //update workspace lastLog
     const updateWsLastLogTotalTasks = { [`workspaces/${process.env.selectedWorkspace}/lastLog/last`]: currentDate }

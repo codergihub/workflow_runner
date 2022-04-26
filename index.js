@@ -86,11 +86,8 @@
   }
 
 
-  global.endTime = new Date()
-  setInterval(() => {
-    global.endTime.setSeconds(global.endTime.getSeconds() + 1)
 
-  }, 1000)
+
 
 
 
