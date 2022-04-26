@@ -6,7 +6,7 @@ const makeDir = require('make-dir');
 const pather = require('path')
 const fbDatabase = fbRest()
 const { timespan } = require('./utils/timespan')
-const {triggerNextTask}=require('./helper')
+const { triggerNextTask } = require('./helper')
 var exec = require('child_process').execSync
 async function runRepo({ workflow }) {
 
@@ -242,7 +242,7 @@ async function postTaskRun() {
 
     }
     var date1 = new Date(parseInt(process.env.start))
-    var date2 = new Date(global.endTime.getTime())
+    var date2 = Date.now()
     const { hours, mins, seconds } = timespan(date2, date1)
     const duration = `${hours}:${mins}:${seconds}`
 
