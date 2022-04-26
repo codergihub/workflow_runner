@@ -110,7 +110,7 @@ async function runRepo({ workflow }) {
         //   workflowEmitter.emit("WORKFLOW_RUN_FAILED", { taskId, workflowKey,error })
         debugger;
 
-    //  process.exit(1)
+      process.exit(1)
 
 
 
@@ -147,7 +147,7 @@ async function runRepo({ workflow }) {
             await postTaskRun({ result: 'success' })
             debugger;
 
-        //   process.exit(0)
+           process.exit(0)
 
 
 
